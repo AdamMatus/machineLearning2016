@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <chrono>
+#include "../inc/car.hpp"
 
 const auto basic_quantum_time = std::chrono::milliseconds(25);
 
@@ -10,19 +11,19 @@ int main(int argc, char *argv[])
 	sf::RenderWindow mainWindow(sf::VideoMode(800, 600), "Driving doggo rectangles.");
 	mainWindow.setVerticalSyncEnabled(true);
 
-	sf::Vector2<float> doggoSize = sf::Vector2<float>(50,50);
-	sf::RectangleShape testDoggo(doggoSize);
+	Car doggo(5);
+
+	sf::RectangleShape testDoggo(doggo.getSize());
 	testDoggo.setFillColor(sf::Color::Red);
 	
 	sf::Vector2<float> doggoStartPos;
 	doggoStartPos.x	= static_cast<float>(mainWindow.getSize().x);
 	doggoStartPos.y	= static_cast<float>(mainWindow.getSize().y);
 	doggoStartPos.x /= 2;
-	doggoStartPos.x -= doggoSize.x/2;
+	doggoStartPos.x -= doggo.getSize().x/2;
 	doggoStartPos.y /= 2;
-	doggoStartPos.y -= doggoSize.y/2;
-	testDoggo.setPosition(doggoStartPos);
-
+	doggoStartPos.y -= doggo.getSize().y/2;
+	testDoggo.setPosition(doggoStartPos); 
 	auto frame_time_point = std::chrono::system_clock::now();
 	while(mainWindow.isOpen())
 	{
@@ -33,20 +34,26 @@ int main(int argc, char *argv[])
 				mainWindow.close();
 		}
 
-		sf::Vector2f doggoMovement;
+		sf::Vector2f doggoDir;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			doggoMovement.y = -5;
+			doggoDir.y = -1;
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			doggoMovement.y = 5;
+			doggoDir.y = 1;
+		else 
+			doggoDir.y = 0;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			doggoMovement.x = 5;
+			doggoDir.x = 1;
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			doggoMovement.x = -5;
+			doggoDir.x = -1;
+		else
+			doggoDir.x = 0;
+
+		sf::Vector2f newPosition = doggo.accelerate(basic_quantum_time, doggoDir);
 
 		mainWindow.clear(sf::Color::Black);
 		
-		testDoggo.move(doggoMovement);
+		testDoggo.setPosition(newPosition);
 		mainWindow.draw(testDoggo);	
 		
 		mainWindow.display();
