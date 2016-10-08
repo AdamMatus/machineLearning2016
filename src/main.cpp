@@ -1,29 +1,47 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <thread>
+#include <string>
 #include <chrono>
 #include "../inc/car.hpp"
+#include "../inc/track.hpp"
 
 const auto basic_quantum_time = std::chrono::milliseconds(25);
 
 int main(int argc, char *argv[])
 {
-	sf::RenderWindow mainWindow(sf::VideoMode(800, 600), "Driving doggo rectangles.");
+	auto winSize = sf::Vector2u(1400,900);
+	sf::RenderWindow mainWindow(sf::VideoMode(winSize.x, winSize.y), "Driving doggo rectangles.");
 	mainWindow.setVerticalSyncEnabled(true);
 
-	Car doggo(5);
+	sf::Font arial;
+	if(!arial.loadFromFile("arial.ttf"))
+	{
+		return -1;
+	}
+	sf::Text doggoInfoText;
+	doggoInfoText.setFont(arial);
+	doggoInfoText.setCharacterSize(24);
+	doggoInfoText.setColor(sf::Color::White);
 
-	sf::RectangleShape testDoggo(doggo.getSize());
+	Track mainTrack(winSize, basic_quantum_time);
+
+	auto doggoSize = sf::Vector2f(50,50);
+
+	sf::RectangleShape testDoggo(doggoSize);
 	testDoggo.setFillColor(sf::Color::Red);
 	
 	sf::Vector2<float> doggoStartPos;
 	doggoStartPos.x	= static_cast<float>(mainWindow.getSize().x);
 	doggoStartPos.y	= static_cast<float>(mainWindow.getSize().y);
 	doggoStartPos.x /= 2;
-	doggoStartPos.x -= doggo.getSize().x/2;
+	doggoStartPos.x -= doggoSize.x/2;
 	doggoStartPos.y /= 2;
-	doggoStartPos.y -= doggo.getSize().y/2;
+	doggoStartPos.y -= doggoSize.y/2;
 	testDoggo.setPosition(doggoStartPos); 
+
+	Car doggo(50, doggoStartPos, doggoSize);
+
 	auto frame_time_point = std::chrono::system_clock::now();
 	while(mainWindow.isOpen())
 	{
@@ -49,11 +67,23 @@ int main(int argc, char *argv[])
 		else
 			doggoDir.x = 0;
 
-		sf::Vector2f newPosition = doggo.accelerate(basic_quantum_time, doggoDir);
+
+		mainTrack.trackMove(doggo);
+		doggo.accelerate(basic_quantum_time, doggoDir);
+		auto newPosition = doggo.getPosition();
+
+		std::string doggoMesg  = "Speed of doggo: " + std::to_string(doggo.getVelocity().x) + "x ";
+	 	doggoMesg += std::to_string(doggo.getVelocity().y) + "y" + '\n';
+		doggoMesg += "Position of doggo: " + std::to_string(newPosition.x) + "x ";
+		doggoMesg += std::to_string(newPosition.y) + "y";
+
+		doggoInfoText.setString(doggoMesg);
 
 		mainWindow.clear(sf::Color::Black);
 		
 		testDoggo.setPosition(newPosition);
+
+		mainWindow.draw(doggoInfoText);
 		mainWindow.draw(testDoggo);	
 		
 		mainWindow.display();
