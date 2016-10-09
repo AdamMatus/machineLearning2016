@@ -1,31 +1,51 @@
 #include "../inc/track.hpp"
 
+sf::Vector2f Track::Barrier::testConstrains(const Car& contextCar)
+{
+	auto carPosition = contextCar.getPosition();
+	auto collisionActiveConstrains = sf::Vector2f(0,0);
+
+	collisionActiveConstrains.x = testSingleConstrain(xConstrains, carPosition.x);
+	collisionActiveConstrains.y = testSingleConstrain(yConstrains, carPosition.y);
+
+	return collisionActiveConstrains;
+}
 
 void Track::trackMove(Car& contextCar)
 {
-	auto actualPosition = contextCar.getPosition();
+	auto pastActiveConstrain = contextCar.getCollisionState();
 	auto aux_acc = sf::Vector2f(0,0);
 	
-	if(!testConstrain(xConstrains, actualPosition.x))
-	{
-		if(!contextCar.inConstrain())
+	for(auto b : barriers)
+	{	
+		auto activeConstrains = b.testConstrains(contextCar);
+
+		if(activeConstrains.x > 0)
 		{
-			auto currentVelocity = contextCar.getVelocity().x;
-			aux_acc.x = -2*currentVelocity;
-			contextCar.inConstrain(true);
+			if(pastActiveConstrain.x == 0)
+			{
+				auto currentVelocity = contextCar.getVelocity().x;
+				aux_acc.x  = -2*currentVelocity;
+				contextCar.setCollisionStateX(true);
+				break;
+			}
+		}
+		else
+			contextCar.setCollisionStateX(false);
+
+		if(activeConstrains.y > 0)
+		{
+			if(pastActiveConstrain.y == 0)
+			{
+				auto currentVelocity = contextCar.getVelocity().y;
+				aux_acc.y  = -2*currentVelocity;
+				contextCar.setCollisionStateY(true);
+				break;
+			}
+			else
+				contextCar.setCollisionStateY(false);
 		}
 	}
-	if(!testConstrain(yConstrains, actualPosition.y))
-	{
-		if(!contextCar.inConstrain())
-		{
-			auto currentVelocity = contextCar.getVelocity().y;
-			aux_acc.y = -2*currentVelocity;
-			contextCar.inConstrain(true);
-		}
-	}
-	else
-		contextCar.inConstrain(false);
 	
 	contextCar.accelerate(quantum_time, sf::Vector2f(0,0), aux_acc); 
 }
