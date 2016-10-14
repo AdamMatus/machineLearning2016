@@ -24,7 +24,14 @@ int main(int argc, char *argv[])
 	doggoInfoText.setCharacterSize(24);
 	doggoInfoText.setColor(sf::Color::White);
 
+	
 	Track mainTrack(winSize, basic_quantum_time);
+
+	auto testBarrier = sf::RectangleShape(sf::Vector2f(100, 50));
+	testBarrier.setPosition(200,300);
+	testBarrier.setFillColor(sf::Color::Green);
+
+	mainTrack.add_barrier(testBarrier);
 
 	auto doggoSize = sf::Vector2f(50,50);
 
@@ -84,6 +91,7 @@ int main(int argc, char *argv[])
 		testDoggo.setPosition(newPosition);
 
 		mainWindow.draw(doggoInfoText);
+		mainWindow.draw(testBarrier);
 		mainWindow.draw(testDoggo);	
 		
 		mainWindow.display();

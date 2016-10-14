@@ -10,23 +10,8 @@ class Car {
 private:
 	sf::Vector2f acceleration, velocity, position; //pix for sec
 	sf::Vector2f size;
-	sf::Vector2f collisionActiveConstrains; 
 public:
 	Car(float acc, sf::Vector2f pos = sf::Vector2f(0,0), sf::Vector2f siz = sf::Vector2f(50,50)); 
-
-	sf::Vector2f getCollisionState() const
-	{
-		return collisionActiveConstrains;
-	}
-
-	void setCollisionStateX(bool b)
-	{
-		collisionActiveConstrains.x = b?1:0;
-	}
-	void setCollisionStateY(bool b)
-	{
-		collisionActiveConstrains.y = b?1:0;
-	}
 
 	const sf::Vector2f& getVelocity() const
 	{

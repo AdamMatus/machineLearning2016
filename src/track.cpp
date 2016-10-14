@@ -1,49 +1,54 @@
 #include "../inc/track.hpp"
 
-sf::Vector2f Track::Barrier::testConstrains(const Car& contextCar)
+bool Track::Barrier::testConstrains(const Car& contextCar)
 {
 	auto carPosition = contextCar.getPosition();
-	auto collisionActiveConstrains = sf::Vector2f(0,0);
 
-	collisionActiveConstrains.x = testSingleConstrain(xConstrains, carPosition.x);
-	collisionActiveConstrains.y = testSingleConstrain(yConstrains, carPosition.y);
+	if(	testSingleConstrain(xConstrains, carPosition.x) &&
+			testSingleConstrain(yConstrains, carPosition.y))
+		return true;
+	else
+		return false;
+}
 
-	return collisionActiveConstrains;
+void Track::add_barrier(const sf::RectangleShape& rs)
+{
+	sf::Vector2f xConstrains = sf::Vector2f(rs.getPosition().x,
+																				 	rs.getPosition().x + rs.getSize().x) ;
+	sf::Vector2f yConstrains = sf::Vector2f(rs.getPosition().y,
+																					rs.getPosition().y + rs.getSize().y) ;
+	
+	barriers.push_back(Barrier(xConstrains, yConstrains));
 }
 
 void Track::trackMove(Car& contextCar)
 {
-	auto pastActiveConstrain = contextCar.getCollisionState();
 	auto aux_acc = sf::Vector2f(0,0);
 	
-	for(auto b : barriers)
+	for(auto &b : barriers)
 	{	
-		auto activeConstrains = b.testConstrains(contextCar);
+		auto dirInfo = b.getLastCarDir();
+		b.updateCollisionInfo(contextCar);	
 
-		if(activeConstrains.x > 0)
+		if(b.testConstrains(contextCar))
 		{
-			if(pastActiveConstrain.x == 0)
+			if(!dirInfo.x)
 			{
-				auto currentVelocity = contextCar.getVelocity().x;
-				aux_acc.x  = -2*currentVelocity;
-				contextCar.setCollisionStateX(true);
+				if(!dirInfo.y) break; //if last time car was active constrains allow to go out
+				aux_acc.y = -2*contextCar.getVelocity().y;
 				break;
 			}
-		}
-		else
-			contextCar.setCollisionStateX(false);
-
-		if(activeConstrains.y > 0)
-		{
-			if(pastActiveConstrain.y == 0)
+			else if(!dirInfo.y)
 			{
-				auto currentVelocity = contextCar.getVelocity().y;
-				aux_acc.y  = -2*currentVelocity;
-				contextCar.setCollisionStateY(true);
+				aux_acc.x = -2*contextCar.getVelocity().x;
 				break;
 			}
-			else
-				contextCar.setCollisionStateY(false);
+			else //non of them is zero
+			{
+				aux_acc.x = -1.5*contextCar.getVelocity().x;
+				aux_acc.y = -1.5*contextCar.getVelocity().y;
+				break;
+			}
 		}
 	}
 	

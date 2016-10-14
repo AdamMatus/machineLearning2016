@@ -11,13 +11,12 @@
 class Track{
 public:
 	Track(const sf::Vector2u& winSize, const std::chrono::milliseconds q_time) :
-		quantum_time{q_time},
-		windowConstrains{
-			sf::Vector2f(static_cast<float>(winSize.x), 0),  //reverse order
-	 		sf::Vector2f(static_cast<float>(winSize.y), 0)}	
+		quantum_time{q_time}
 	{
-		barriers.push_back(windowConstrains);	
+		//barriers.push_back(windowConstrains);	
 	}
+
+	void add_barrier(const sf::RectangleShape& );
 	void trackMove(Car&);
 
 private:
@@ -28,22 +27,33 @@ private:
 
 	class Barrier{
 	public:
-		sf::Vector2f testConstrains(const Car& contextCar);
+		bool testConstrains(const Car& contextCar);
+		void updateCollisionInfo(const Car& contextCar)
+		{
+			lastCarDir.x = !testSingleConstrain(xConstrains, contextCar.getPosition().x);
+			lastCarDir.y = !testSingleConstrain(yConstrains, contextCar.getPosition().y);
+		}
+		sf::Vector2f getLastCarDir() const
+		{
+			return lastCarDir;	
+		}
 		Barrier(sf::Vector2f xCon, sf::Vector2f yCon):
 			xConstrains(xCon),
-			yConstrains(yCon)
+			yConstrains(yCon),
+			lastCarDir(sf::Vector2f(0,0))
 		{}
 	private:
 			sf::Vector2f xConstrains, yConstrains;
+			sf::Vector2f lastCarDir; //versor onnly
 			bool testSingleConstrain(sf::Vector2f constrain, float pos){
 				if(pos >  constrain.x) 
-					return true;
-				if(pos <  constrain.y)
-					return true;
+					if(pos <  constrain.y)
+						return true;
 
 				return false;
 			}
-	} windowConstrains;
+	};
+
 
 };
 
