@@ -21,6 +21,11 @@ void Track::add_barrier(const sf::RectangleShape& rs)
 	barriers.push_back(Barrier(xConstrains, yConstrains));
 }
 
+void Track::add_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
+{
+	barriers.push_back(Barrier(xCon, yCon)); //TODO throw exce if xCon.x < xCon.y etc.
+}
+
 void Track::trackMove(Car& contextCar)
 {
 	auto aux_acc = sf::Vector2f(0,0);

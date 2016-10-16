@@ -13,10 +13,27 @@ public:
 	Track(const sf::Vector2u& winSize, const std::chrono::milliseconds q_time) :
 		quantum_time{q_time}
 	{
-		//barriers.push_back(windowConstrains);	
+		//barriers.push_back(windowConstrains);	//TODO ?? is it necessery to
+		//implement?
 	}
 
 	void add_barrier(const sf::RectangleShape& );
+	void add_barrier(const sf::Vector2f xCon, const sf::Vector2f yCon);
+	bool getNextRectToDraw(sf::RectangleShape& rs) const
+	{
+		static auto b_iter = barriers.begin();
+
+		if(b_iter == barriers.end())
+		{
+			b_iter = barriers.begin();
+			return false;
+		}
+
+		rs = (*b_iter).getBarrierRect();
+		b_iter++;
+		return true;
+
+	}
 	void trackMove(Car&);
 
 private:
@@ -37,6 +54,12 @@ private:
 		{
 			return lastCarDir;	
 		}
+		sf::RectangleShape getBarrierRect() const
+		{
+			sf::RectangleShape rs(sf::Vector2f(xConstrains.y-xConstrains.x,yConstrains.y-yConstrains.x));
+			rs.setPosition(xConstrains.x, yConstrains.x); //up-left corner
+			return rs;
+		}
 		Barrier(sf::Vector2f xCon, sf::Vector2f yCon):
 			xConstrains(xCon),
 			yConstrains(yCon),
@@ -44,7 +67,7 @@ private:
 		{}
 	private:
 			sf::Vector2f xConstrains, yConstrains;
-			sf::Vector2f lastCarDir; //versor onnly
+			sf::Vector2f lastCarDir; //versor onnly TODO change implementation for more than 1 car
 			bool testSingleConstrain(sf::Vector2f constrain, float pos){
 				if(pos >  constrain.x) 
 					if(pos <  constrain.y)
