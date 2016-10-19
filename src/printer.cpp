@@ -13,66 +13,69 @@ void Printer::letUserDrawBarriers(Track& contextTrack)
 {
 	sf::Vector2i pressed_barrier_pos(0,0);
 	while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+	{
+		while(mainWindow.pollEvent(event))
+		{
+			if( event.type == sf::Event::Closed )  
 			{
-				while(mainWindow.pollEvent(event))
-				{
-					if(event.type)
-					{
-						case sf::Event::Closed:  //TODO throw an exception man
-							mainWindow.close();
-							return;
-						case sf::Event::MouseButtonPressed:
-							if(event.mouseButton.button == sf::Mouse::Left)
-								pressed_barrier_pos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
-							break;
-						case sf::Event::MouseButtonReleased:
-							if(event.mouseButton.button == sf::Mouse::Left)
-							{
-								sf::Vector2f xCon;
-								sf::Vector2f yCon;
-								if(event.mouseButton.x > pressed_barrier_pos.x)
-								{
-									xCon.x = pressed_barrier_pos.x;
-									xCon.y = event.mouseButton.x;
-								}
-								else
-								{
-									xCon.x = event.mouseButton.x;
-									xCon.y = pressed_barrier_pos.x;
-								}
-
-								if(event.mouseButton.y > pressed_barrier_pos.y)
-								{
-									yCon.x = pressed_barrier_pos.y;
-									yCon.y = event.mouseButton.y;
-								}
-								else
-								{
-									yCon.x = event.mouseButton.y;
-									yCon.y = pressed_barrier_pos.y;
-								}
-
-								contextTrack.add_barrier(xCon, yCon);
-							}
-							break;
-					}
-				} // end off polling events
-
-				//graphics
-				mainWindow.clear(sf::Color::Black);
-				drawBarriers(contextTrack);
-				waitForNextFrame();
-				//
+				mainWindow.close();
+				return;
 			}
+			else if(event.type == sf::Event::MouseButtonPressed)
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
+					pressed_barrier_pos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+			}
+			else if( event.type == sf::Event::MouseButtonReleased )
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
+				{
+					sf::Vector2f xCon;
+					sf::Vector2f yCon;
+					if(event.mouseButton.x > pressed_barrier_pos.x)
+					{
+						xCon.x = pressed_barrier_pos.x;
+						xCon.y = event.mouseButton.x;
+					}
+					else
+					{
+						xCon.x = event.mouseButton.x;
+						xCon.y = pressed_barrier_pos.x;
+					}
+
+					if(event.mouseButton.y > pressed_barrier_pos.y)
+					{
+						yCon.x = pressed_barrier_pos.y;
+						yCon.y = event.mouseButton.y;
+					}
+					else
+					{
+						yCon.x = event.mouseButton.y;
+						yCon.y = pressed_barrier_pos.y;
+					}
+
+					contextTrack.add_barrier(xCon, yCon);
+				}
+			}
+		} // end off polling events
+
+		//graphics
+		mainWindow.clear(sf::Color::Black);
+		drawBarriers(contextTrack);
+		mainWindow.display();
+		waitForNextFrame();
+		//
+	}
 
 	return;
 }
 
 void Printer::drawBarriers(const Track& contextTrack)
 {
-	sf::RectangleShape drawRect(sf::Vector2f(0,0));
-	while(contextTrack.getNextRectToDraw(drawRect))
-		mainWindow.draw(drawRect);
+	sf::RectangleShape rs(sf::Vector2f(0,0));
+	rs.setFillColor(sf::Color::Blue);
+	while(contextTrack.getNextRectToDraw(rs))
+		mainWindow.draw(rs);
 }
 
 void Printer::waitForNextFrame()
@@ -82,7 +85,6 @@ void Printer::waitForNextFrame()
 	auto diffDuration = basic_quantum_time -  std::chrono::duration_cast<std::chrono::milliseconds>(frame_time_point - std::chrono::system_clock::now());
 	std::this_thread::sleep_for(diffDuration);
 	frame_time_point = std::chrono::system_clock::now();
-
 }
 
 void Printer::testPoll(Track& contextTrack, Car& contextCar)

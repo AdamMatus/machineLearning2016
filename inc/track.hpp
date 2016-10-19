@@ -21,7 +21,7 @@ public:
 	void add_barrier(const sf::Vector2f xCon, const sf::Vector2f yCon);
 	bool getNextRectToDraw(sf::RectangleShape& rs) const
 	{
-		static auto b_iter = barriers.begin();
+		auto b_iter = barriers.begin();
 
 		if(b_iter == barriers.end())
 		{
@@ -29,8 +29,8 @@ public:
 			return false;
 		}
 
-		rs = (*b_iter).getBarrierRect();
-		b_iter++;
+		rs.setFillColor(sf::Color::Blue);
+		rs = (*b_iter++).getBarrierRect();
 		return true;
 
 	}

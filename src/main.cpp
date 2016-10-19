@@ -24,6 +24,9 @@ int main(int argc, char *argv[])
 	testBarrier.setFillColor(sf::Color::Green);
 
 	mainTrack.add_barrier(testBarrier);
+
+	testBarrier.setPosition(700, 300);
+	mainTrack.add_barrier(testBarrier);
 	/********************/
 
 	//DRAWING BARRIERS
