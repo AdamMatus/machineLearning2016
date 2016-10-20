@@ -19,18 +19,19 @@ public:
 
 	void add_barrier(const sf::RectangleShape& );
 	void add_barrier(const sf::Vector2f xCon, const sf::Vector2f yCon);
-	bool getNextRectToDraw(sf::RectangleShape& rs) const
+	bool getNextRectToDraw(sf::RectangleShape& rs) const // polling fun
 	{
-		auto b_iter = barriers.begin();
+		static size_t index = 0;
+		auto b_iter = barriers.begin() + index;
 
 		if(b_iter == barriers.end())
 		{
-			b_iter = barriers.begin();
+			index = 0;
 			return false;
 		}
 
-		rs.setFillColor(sf::Color::Blue);
-		rs = (*b_iter++).getBarrierRect();
+		rs = (*b_iter).getBarrierRect();
+		index++;
 		return true;
 
 	}
