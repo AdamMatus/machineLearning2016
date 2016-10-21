@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	//++++++++++++
 
 	//TRACK +++
-	Track mainTrack(winSize, basic_quantum_time);
+	Track mainTrack(winSize);
 	//++++++++++++
 
 	//single test barrier

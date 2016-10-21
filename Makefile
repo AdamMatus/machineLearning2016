@@ -3,6 +3,7 @@ CFLAGS=-Wall -g3 -O0
 SOURCES=src/main.cpp src/car.cpp src/printer.cpp
 OBJECTS=main.o car.o printer.o track.o
 EXECUTABLE=AI
+PROJ_PATH_HEADERS=../inc/
 SFMLLIBS=-lsfml-graphics -lsfml-window -lsfml-system
 
 AI: $(OBJECTS)

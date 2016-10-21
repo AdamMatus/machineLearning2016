@@ -28,6 +28,8 @@ private:
 	} 
 	void waitForNextFrame();
 
+	sf::RectangleShape mouseDrawingBarriersDetection();
+
 public:
 
 	void testPoll(Track& contextTrack, Car& contextCar);

@@ -9,9 +9,14 @@
 class Car {
 private:
 	sf::Vector2f acceleration, velocity, position; //pix for sec
+	sf::Vector2f start_position;
 	sf::Vector2f size;
+	bool onFinish;
 public:
 	Car(float acc, sf::Vector2f pos = sf::Vector2f(0,0), sf::Vector2f siz = sf::Vector2f(50,50)); 
+
+	void markAsFinished() { onFinish = true; }
+	bool getFinishState() { return onFinish; }
 
 	const sf::Vector2f& getVelocity() const
 	{
@@ -24,6 +29,13 @@ public:
 	const sf::Vector2f& getSize() const
 	{
 		return size;
+	}
+
+	void resetCar()
+	{
+			onFinish = false;
+			position = start_position;
+			velocity = sf::Vector2f(0,0);
 	}
 
 	sf::Vector2f accelerate(std::chrono::milliseconds quantum_time, const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );

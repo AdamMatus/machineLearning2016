@@ -5,7 +5,9 @@ Car::Car(float acc, sf::Vector2f pos, sf::Vector2f siz) :
  	acceleration{acc, acc},
  	velocity{0, 0},
  	position{pos},
- 	size{siz}
+	start_position{pos},
+ 	size{siz},
+	onFinish{false}
 {}
 
 sf::Vector2f Car::accelerate(std::chrono::milliseconds quantum_time,const sf::Vector2f& dir, const sf::Vector2f& acc) //acc is outside force
