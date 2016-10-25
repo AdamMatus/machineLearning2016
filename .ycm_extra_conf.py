@@ -59,7 +59,7 @@ flags = [
 '../llvm/include',
 '-isystem',
 '../llvm/tools/clang/include',
-'-I',
+'-I','inc/',
 '.',
 '-I',
 './ClangCompleter',
