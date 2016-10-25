@@ -1,4 +1,6 @@
-#include "../inc/printer.hpp"
+#include <printer.hpp>
+#include <controller.hpp>
+
 #include <chrono>
 #include <thread>
 
@@ -118,6 +120,8 @@ void Printer::waitForNextFrame()
 void Printer::testPoll(Track& contextTrack, Car& contextCar)
 {
 
+	KeyboardController manualController;	
+
 	if(!arial.loadFromFile("arial.ttf"))
 	{
 		return;
@@ -135,6 +139,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				mainWindow.close();
 		}
 
+		//###FINISH###
 		if(contextCar.getFinishState())
 		{
 			contextCar.resetCar();
@@ -156,28 +161,13 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				waitForNextFrame();
 			}
 		}
+		//###~FINISH###
 
-		//controlling TODO
-		sf::Vector2f doggoDir;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-			doggoDir.y = -1;
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-			doggoDir.y = 1;
-		else 
-			doggoDir.y = 0;
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-			doggoDir.x = 1;
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::H))
-			doggoDir.x = -1;
-		else
-			doggoDir.x = 0;
-
-		//computations TODO
+		//###computations###
 		contextTrack.trackMove(contextCar);
-		contextCar.accelerate(basic_quantum_time, doggoDir);
+		manualController.move(contextCar);	
 
-		//####################TEXT /TODO
+		//### TEXT ### /TODO
 		std::string contextCarMesg  = "Speed of contextCar: " + std::to_string(contextCar.getVelocity().x) + "x ";
 	 	contextCarMesg += std::to_string(contextCar.getVelocity().y) + "y" + '\n';
 		contextCarMesg += "Position of contextCar: " + std::to_string(contextCar.getPosition().x) + "x ";
@@ -185,7 +175,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 		contextCarInfoText.setString(contextCarMesg);
 		contextCarInfoText.setPosition(10,50);
-		//###################3
+		//### ~TEXT ###
 
 		mainWindow.clear(sf::Color::Black);
 		mainWindow.draw(contextCarInfoText);

@@ -2,6 +2,7 @@
 #include "../inc/car.hpp"
 
 Car::Car(float acc, sf::Vector2f pos, sf::Vector2f siz) :
+	quantum_time(std::chrono::milliseconds(25)), 
  	acceleration{acc, acc},
  	velocity{0, 0},
  	position{pos},
@@ -10,7 +11,7 @@ Car::Car(float acc, sf::Vector2f pos, sf::Vector2f siz) :
 	onFinish{false}
 {}
 
-sf::Vector2f Car::accelerate(std::chrono::milliseconds quantum_time,const sf::Vector2f& dir, const sf::Vector2f& acc) //acc is outside force
+sf::Vector2f Car::accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc) //acc is outside force
 {
 	velocity.x += dir.x*acceleration.x + acc.x;	
 	velocity.y += dir.y*acceleration.y + acc.y;	

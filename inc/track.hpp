@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-#include "../inc/car.hpp"
+#include <car.hpp>
 
 class Track{
 public:
@@ -71,14 +71,12 @@ private:
 		}
 		virtual	void interactWithBarrier(Car& contextCar);
 		Barrier(sf::Vector2f xCon, sf::Vector2f yCon):
-			quantum_time(std::chrono::milliseconds(25)), //TODO 
 			xConstrains(xCon),
 			yConstrains(yCon),
 			lastCarDir(sf::Vector2f(0,0))
 		{}
 		virtual ~Barrier() {}
 	private:
-			const std::chrono::milliseconds quantum_time ;
 			sf::Vector2f xConstrains, yConstrains;
 			sf::Vector2f lastCarDir; //versor onnly TODO change implementation for more than 1 car
 			bool testSingleConstrain(sf::Vector2f constrain, float pos){
