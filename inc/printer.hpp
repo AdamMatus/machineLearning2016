@@ -6,9 +6,8 @@
 
 #include <vector>
 
-#include "../inc/car.hpp"
-#include "../inc/track.hpp"
-
+#include <car.hpp>
+#include <track.hpp>
 
 const auto basic_quantum_time = std::chrono::milliseconds(25);
 

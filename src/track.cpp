@@ -66,7 +66,7 @@ void Track::Barrier::interactWithBarrier(Car& contextCar)
 			}
 		}
 
-	contextCar.accelerate(quantum_time, sf::Vector2f(0,0), aux_acc); 
+	contextCar.accelerate(sf::Vector2f(0,0), aux_acc); 
 }
 
 void Track::FinishBarrier::interactWithBarrier(Car& contextCar)

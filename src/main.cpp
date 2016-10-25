@@ -3,9 +3,10 @@
 #include <thread>
 #include <string>
 #include <chrono>
-#include "../inc/car.hpp"
-#include "../inc/track.hpp"
-#include "../inc/printer.hpp"
+
+#include <car.hpp>
+#include <track.hpp>
+#include <printer.hpp>
 
 int main(int argc, char *argv[])
 {
