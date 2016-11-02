@@ -1,28 +1,47 @@
-CC=g++ -std=c++11 -Iinc/
+CC=g++ -std=c++11 
 CFLAGS=-Wall -g3 -O0
-SOURCES=src/main.cpp src/car.cpp src/printer.cpp src/controller.cpp
+SOURCES=main.cpp car.cpp printer.cpp controller.cpp
+
+INC_PATH=inc/
+SRC_PATH=src/
+OBJ_PATH=obj/
+
+vpath %.hpp $(INC_PATH)
+vpath %.cpp $(SRC_PATH)
+
+CC=g++ -std=c++11
+CFLAGS=-Wall -g3 -O0
+IINC=-I$(INC_PATH)
+
 OBJECTS=main.o car.o printer.o track.o controller.o
 EXECUTABLE=AI
-PROJ_PATH_HEADERS=../inc/
+
 SFMLLIBS=-lsfml-graphics -lsfml-window -lsfml-system
 
-AI: $(OBJECTS)
-	$(CC) $(CFLAGS) -o AI $(OBJECTS) $(SFMLLIBS)
+AI: $(OBJECTS) 
+	$(CC) $(CFLAGS) -o AI $^ $(SFMLLIBS)
 
-main.o: $(SOURCES)
-	$(CC) -c $(CFLAGS) src/main.cpp 
+%.d: %.cpp
+	@set -e; rm -f $@; \
+	$(CC) -MM $< $(INC_PATH) > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\l.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -d $@.$$$$	
 
-car.o: src/car.cpp inc/car.hpp
-	$(CC) -c $(CFLAGS) src/car.cpp
+main.o: main.cpp car.hpp printer.hpp track.hpp controller.hpp
+	$(CC) -c $(CFLAGS) $(IINC) $< 
 
-printer.o: src/printer.cpp inc/printer.hpp
-	$(CC) -c $(CFLAGS) src/printer.cpp
+car.o: car.cpp car.hpp
+	$(CC) -c $(CFLAGS) $(IINC) $<
 
-track.o: src/track.cpp inc/track.hpp
-	$(CC) -c $(CFLAGS) src/track.cpp
+printer.o: printer.cpp printer.hpp track.hpp controller.hpp
+	$(CC) -c $(CFLAGS) $(IINC) $<
 
-controller.o: src/controller.cpp inc/controller.hpp
-	$(CC) -c $(CFLAGS) src/controller.cpp
+track.o: track.cpp track.hpp car.hpp
+	$(CC) -c $(CFLAGS) $(IINC) $<
 
+controller.o: controller.cpp controller.hpp car.hpp
+	$(CC) -c $(CFLAGS) $(IINC) $<
+
+.PHONY : clean
 clean: 
-	rm $(OBJECTS) AI
+	rm *.o AI
