@@ -43,23 +43,24 @@ void Track::trackMove(Car& contextCar)
 
 void Track::Barrier::interactWithBarrier(Car& contextCar)
 {
-		auto dirInfo = this->getLastCarDir();
 		auto aux_acc = sf::Vector2f(0,0);
-
-		this->updateCollisionInfo(contextCar);	
 
 		if(this->testConstrains(contextCar))
 		{
-			if(!dirInfo.x)
+			bool presentInX = testSingleConstrain(xConstrains, contextCar.getLastPosition().x); //x1<x<x2
+			bool presentInY = testSingleConstrain(yConstrains, contextCar.getLastPosition().y); //y1<y<y2
+
+			if( presentInX )
 			{
-				if(!dirInfo.y) return; //if last time car was active constrains allow to go out
-				aux_acc.y = -2*contextCar.getVelocity().y;
+				if( presentInY ) return; // [(x1<x<x2) && (y1<y<y2)] is true
+				aux_acc.y = -2*contextCar.getVelocity().y; // collision with upper or downer ?XD? edge
 			}
-			else if(!dirInfo.y)
+
+			else if( presentInY )
 			{
-				aux_acc.x = -2*contextCar.getVelocity().x;
+				aux_acc.x = -2*contextCar.getVelocity().x; //collision with left or right edge
 			}
-			else //non of them is zero
+			else //each condition is false: [!(x1<x<x2) && !(y1<y<y2)] is true
 			{
 				aux_acc.x = -2*contextCar.getVelocity().x;
 				aux_acc.y = -2*contextCar.getVelocity().y;

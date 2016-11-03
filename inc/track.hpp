@@ -50,19 +50,9 @@ private:
 	class Barrier;
 	std::vector<std::unique_ptr<Barrier>> barriers;
 
-
 	class Barrier{
 	public:
 		bool testConstrains(const Car& contextCar);
-		void updateCollisionInfo(const Car& contextCar)
-		{
-			lastCarDir.x = !testSingleConstrain(xConstrains, contextCar.getPosition().x);
-			lastCarDir.y = !testSingleConstrain(yConstrains, contextCar.getPosition().y);
-		}
-		sf::Vector2f getLastCarDir() const
-		{
-			return lastCarDir;	
-		}
 		sf::RectangleShape getBarrierRect() const
 		{
 			sf::RectangleShape rs(sf::Vector2f(xConstrains.y-xConstrains.x,yConstrains.y-yConstrains.x));
@@ -72,13 +62,11 @@ private:
 		virtual	void interactWithBarrier(Car& contextCar);
 		Barrier(sf::Vector2f xCon, sf::Vector2f yCon):
 			xConstrains(xCon),
-			yConstrains(yCon),
-			lastCarDir(sf::Vector2f(0,0))
+			yConstrains(yCon)
 		{}
 		virtual ~Barrier() {}
 	private:
 			sf::Vector2f xConstrains, yConstrains;
-			sf::Vector2f lastCarDir; //versor onnly TODO change implementation for more than 1 car
 			bool testSingleConstrain(sf::Vector2f constrain, float pos){
 				if(pos >  constrain.x) 
 					if(pos <  constrain.y)

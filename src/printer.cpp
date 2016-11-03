@@ -166,6 +166,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		//###computations###
 		contextTrack.trackMove(contextCar);
 		manualController.move(contextCar);	
+		contextCar.calculateNewPosition();
 
 		//### TEXT ### /TODO
 		std::string contextCarMesg  = "Speed of contextCar: " + std::to_string(contextCar.getVelocity().x) + "x ";

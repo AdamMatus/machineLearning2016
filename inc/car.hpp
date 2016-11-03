@@ -9,7 +9,7 @@
 class Car {
 private:
 	const std::chrono::milliseconds quantum_time;
-	sf::Vector2f acceleration, velocity, position; //pix for sec
+	sf::Vector2f acceleration, velocity, position, lastPosition; //pix for sec
 	sf::Vector2f start_position;
 	sf::Vector2f size;
 	bool onFinish;
@@ -27,6 +27,10 @@ public:
 	{
 		return position;
 	}
+	const sf::Vector2f& getLastPosition() const
+	{
+		return lastPosition;
+	}
 	const sf::Vector2f& getSize() const
 	{
 		return size;
@@ -39,7 +43,8 @@ public:
 			velocity = sf::Vector2f(0,0);
 	}
 
-	sf::Vector2f accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );
+	void accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );
+	void calculateNewPosition();
 
 };
 #endif
