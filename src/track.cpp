@@ -1,4 +1,4 @@
-#include "../inc/track.hpp"
+#include <track.hpp>
 
 bool Track::Barrier::testConstrains(const Car& contextCar)
 {
@@ -33,12 +33,30 @@ void Track::add_finish_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
 
 void Track::trackMove(Car& contextCar)
 {
-	
 	for(auto &b : barriers)
 	{	
 		b->interactWithBarrier(contextCar);
 	}
-	
+}
+
+int Track::trackMoveUntilBarrier(Car& contextCar, int limit) // returns
+{
+	int index = 0;
+	while(limit-- > 0)
+	{
+		index++;
+		for(auto &b : barriers)
+		{	
+			if(b->testConstrains(contextCar))
+			{
+				b->interactWithBarrier(contextCar);
+				contextCar.calculateNewPosition();
+				return index;
+			}
+		}
+		contextCar.calculateNewPosition();
+ 	}
+	return index;
 }
 
 void Track::Barrier::interactWithBarrier(Car& contextCar)

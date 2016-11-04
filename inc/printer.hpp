@@ -26,14 +26,14 @@ private:
 		mainWindow.draw(car_rs);	
 	} 
 	void waitForNextFrame();
+	void drawCarInfo(const Car&, const CarPredictedMovementInfo&);
 
 	sf::RectangleShape mouseDrawingBarriersDetection();
 
 public:
 
-	void testPoll(Track& contextTrack, Car& contextCar);
-
 	Printer(unsigned int, unsigned int);
+	void testPoll(Track& contextTrack, Car& contextCar);
 	void letUserDrawBarriers(Track& tr);
 };
 

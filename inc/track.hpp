@@ -9,6 +9,8 @@
 
 #include <car.hpp>
 
+class Car;
+
 class Track{
 public:
 
@@ -45,6 +47,7 @@ public:
 		return true;
 	}
 	void trackMove(Car&);
+	int trackMoveUntilBarrier(Car&, int limit); //if limit is negative then fun returns 0
 
 private:
 	class Barrier;

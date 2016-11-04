@@ -108,6 +108,49 @@ void Printer::drawBarriers(const Track& contextTrack)
 		mainWindow.draw(rs);
 }
 
+void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo& cpmi)
+{
+	sf::Text carInfoText;
+
+//### TEXT ### /TODO
+	carInfoText.setFont(arial);
+	carInfoText.setCharacterSize(24);
+	carInfoText.setColor(sf::Color::Red);
+
+	std::string carMesg = 
+						"Speed of Car: " + std::to_string(contextCar.getVelocity().x)+"x "+			//
+						std::to_string(contextCar.getVelocity().y) + "y" + '\n' + 							//
+						"Position of Car: " + std::to_string(contextCar.getPosition().x) +"x "+	//
+						std::to_string(contextCar.getPosition().y) + "y" + '\n'+								//
+						"R1 predict vec is: " + std::to_string(cpmi.relPosVec1.x) + "x " +			//
+						std::to_string(cpmi.relPosVec1.y) + "y" + '\n' +												//
+						"R2 predict vec is: " + std::to_string(cpmi.relPosVec2.x) + "x " +			//
+						std::to_string(cpmi.relPosVec2.y) + "y" + '\n' +												//
+						"End veloc versor is: " + std::to_string(cpmi.endVelVersor.x) + "x " +	//
+						std::to_string(cpmi.endVelVersor.y) + "y" + '\n' 
+						;
+	
+
+	carInfoText.setString(carMesg);
+	carInfoText.setPosition(0,0);
+//### ~TEXT ###
+	mainWindow.draw(carInfoText);
+
+	sf::Vertex line[] = 
+	{
+		sf::Vertex(sf::Vector2f(contextCar.getPosition().x, contextCar.getPosition().y)),
+		sf::Vertex(sf::Vector2f(contextCar.getPosition().x + cpmi.relPosVec1.x, contextCar.getPosition().y + cpmi.relPosVec1.y))
+	};
+
+	mainWindow.draw(line, 2, sf::Lines);
+
+	line[0] = line[1]; 
+	line[1] = sf::Vertex(sf::Vector2f(	line[0].position.x + cpmi.relPosVec2.x,
+																			line[0].position.y + cpmi.relPosVec2.y));
+
+	mainWindow.draw(line, 2, sf::Lines);
+}
+
 void Printer::waitForNextFrame()
 {
 	static auto frame_time_point = std::chrono::system_clock::now();
@@ -121,15 +164,16 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 {
 
 	KeyboardController manualController;	
+	CarPredictedMovementInfo contextCarPMI{	sf::Vector2f(50,50),
+																					sf::Vector2f(0,0),
+																					sf::Vector2f(0,0)};
 
 	if(!arial.loadFromFile("arial.ttf"))
 	{
 		return;
 	}
 	sf::Text contextCarInfoText;
-	contextCarInfoText.setFont(arial);
-	contextCarInfoText.setCharacterSize(24);
-	contextCarInfoText.setColor(sf::Color::White);
+
 
 	while(mainWindow.isOpen())
 	{
@@ -168,20 +212,15 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		manualController.move(contextCar);	
 		contextCar.calculateNewPosition();
 
-		//### TEXT ### /TODO
-		std::string contextCarMesg  = "Speed of contextCar: " + std::to_string(contextCar.getVelocity().x) + "x ";
-	 	contextCarMesg += std::to_string(contextCar.getVelocity().y) + "y" + '\n';
-		contextCarMesg += "Position of contextCar: " + std::to_string(contextCar.getPosition().x) + "x ";
-		contextCarMesg += std::to_string(contextCar.getPosition().y) + "y";
-
-		contextCarInfoText.setString(contextCarMesg);
-		contextCarInfoText.setPosition(10,50);
-		//### ~TEXT ###
+		
+		//### car info
+		contextCar.getCPMovementInfo( contextCarPMI, contextTrack);	
+		//### ~car info
 
 		mainWindow.clear(sf::Color::Black);
-		mainWindow.draw(contextCarInfoText);
 		drawBarriers(contextTrack);	
 		drawCar(contextCar);
+		drawCarInfo(contextCar, contextCarPMI);
 		mainWindow.display();
 
 		waitForNextFrame();
