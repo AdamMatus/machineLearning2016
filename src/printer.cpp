@@ -145,6 +145,13 @@ void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo&
 																			line[0].position.y + cpmi.relPosVec2.y));
 
 	mainWindow.draw(line, 2, sf::Lines);
+
+	line[0] = line[1]; 
+	line[1] = sf::Vertex(sf::Vector2f(	line[0].position.x + 50*cpmi.endVelVersor.x, //TODO normalize scalar "50" to velocity per qtime
+																			line[0].position.y + 50*cpmi.endVelVersor.y));
+
+	mainWindow.draw(line, 2, sf::Lines);
+	
 }
 
 void Printer::waitForNextFrame()
