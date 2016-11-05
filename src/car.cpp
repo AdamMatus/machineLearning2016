@@ -61,4 +61,6 @@ void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, Track& contextTrack)
 	endVelVer.x /= velAbsValue;
  	endVelVer.y /= velAbsValue;	
 	cpmi.endVelVersor = endVelVer;
+
+	cpmi.vectorToFinishBarrier = contextTrack.getVectorToLastFinishBarrier(*this);
 }

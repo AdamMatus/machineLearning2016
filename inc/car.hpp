@@ -64,6 +64,7 @@ struct CarPredictedMovementInfo
 	sf::Vector2f relPosVec1;
 	sf::Vector2f relPosVec2;
 	sf::Vector2f endVelVersor;
+	sf::Vector2f vectorToFinishBarrier;
 };
 
 #endif

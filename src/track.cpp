@@ -29,6 +29,8 @@ void Track::add_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
 void Track::add_finish_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
 {
 	barriers.push_back(std::unique_ptr<Barrier>{new FinishBarrier(xCon,yCon)});
+	lastFinishBarrierRect = sf::RectangleShape(sf::Vector2f(xCon.y-xCon.x,yCon.y-yCon.x));
+	lastFinishBarrierRect.setPosition(xCon.x,yCon.x);
 }
 
 void Track::trackMove(Car& contextCar)
@@ -96,3 +98,25 @@ void Track::FinishBarrier::interactWithBarrier(Car& contextCar)
 	}
 }
 
+sf::Vector2f Track::getVectorToLastFinishBarrier(const Car& contextCar)
+{
+	sf::Vector2f vecToFinish(0,0);
+	
+	auto diff_x = lastFinishBarrierRect.getPosition().x	- contextCar.getPosition().x;		
+	if(diff_x > 0)
+		vecToFinish.x = diff_x;
+	else if(diff_x + lastFinishBarrierRect.getSize().x < 0)
+		vecToFinish.x = diff_x + lastFinishBarrierRect.getSize().x;
+	else 
+		vecToFinish.x = 0;
+
+	auto diff_y = lastFinishBarrierRect.getPosition().y	- contextCar.getPosition().y;		
+	if(diff_y > 0)
+		vecToFinish.y = diff_y;
+	else if(diff_y + lastFinishBarrierRect.getSize().y < 0)
+		vecToFinish.y = diff_y + lastFinishBarrierRect.getSize().y;
+	else 
+		vecToFinish.y = 0;
+
+	return vecToFinish;
+}

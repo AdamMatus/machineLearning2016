@@ -122,7 +122,9 @@ void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo&
 						"R2 predict vec is: " + std::to_string(cpmi.relPosVec2.x) + "x " +			//
 						std::to_string(cpmi.relPosVec2.y) + "y" + '\n' +												//
 						"End veloc versor is: " + std::to_string(cpmi.endVelVersor.x) + "x " +	//
-						std::to_string(cpmi.endVelVersor.y) + "y" + '\n' 
+						std::to_string(cpmi.endVelVersor.y) + "y" + '\n'  +
+						"Vector to Finish is: " + std::to_string(cpmi.vectorToFinishBarrier.x) + "x " +			//
+						std::to_string(cpmi.vectorToFinishBarrier.y) + "y" + '\n'  												//
 						;
 
 	carInfoText.setString(carMesg);
@@ -149,6 +151,16 @@ void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo&
 																			line[0].position.y + 50*cpmi.endVelVersor.y));
 
 	mainWindow.draw(line, 2, sf::Lines);
+
+	auto finishBarPoint = cpmi.vectorToFinishBarrier;
+	finishBarPoint.x += contextCar.getPosition().x;
+	finishBarPoint.y += contextCar.getPosition().y;
+	line[0] = finishBarPoint;
+	line[0].color = sf::Color::Blue;
+	line[1] = sf::Vertex(contextCar.getPosition());
+	line[1].color = sf::Color::Yellow;
+
+	mainWindow.draw(line, 2, sf::Lines);
 	
 }
 
@@ -166,6 +178,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 	KeyboardController manualController;	
 	CarPredictedMovementInfo contextCarPMI{	sf::Vector2f(50,50),
+																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0)};
 

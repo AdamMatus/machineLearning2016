@@ -14,7 +14,8 @@ class Car;
 class Track{
 public:
 
-	Track(const sf::Vector2u& winSize)
+	Track(const sf::Vector2u& winSize) :
+		lastFinishBarrierRect(sf::RectangleShape(sf::Vector2f(0,0)))
 	{
 
 		//barriers.push_back(windowConstrains);	//TODO ?? is it necessery to
@@ -49,10 +50,12 @@ public:
 	}
 	void trackMove(Car&);
 	int trackMoveUntilBarrier(Car&, int limit); //if limit is negative then fun returns 0
+	sf::Vector2f getVectorToLastFinishBarrier(const Car& );
 
 private:
 	class Barrier;
 	std::vector<std::unique_ptr<Barrier>> barriers;
+	sf::RectangleShape lastFinishBarrierRect;
 
 
 	class Barrier{
