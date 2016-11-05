@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	/********************/
 
 	//DRAWING BARRIERS
-	mainPrinter.letUserDrawBarriers(mainTrack);
+	if(mainPrinter.letUserDrawBarriers(mainTrack)) return 0; //add exception 
 	//++++++++++++++++++
 
 

@@ -11,7 +11,7 @@ Printer::Printer(unsigned int width, unsigned int hight):
 	mainWindow.setVerticalSyncEnabled(true);
 }
 
-void Printer::letUserDrawBarriers(Track& contextTrack)
+bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
 {
 
 	sf::RectangleShape finishRect;
@@ -30,7 +30,7 @@ void Printer::letUserDrawBarriers(Track& contextTrack)
 
 		doBarrierGraphicsAndEndFrame(contextTrack);
 	}
-	return;
+	return false;
 }
 
 sf::RectangleShape Printer::mouseDrawingBarriersDetection()
@@ -46,7 +46,7 @@ sf::RectangleShape Printer::mouseDrawingBarriersDetection()
 			if( event.type == sf::Event::Closed )  
 			{
 				mainWindow.close();
-				break;
+				break; //TODO throw excteption
 			}
 			else if(event.type == sf::Event::MouseButtonPressed)
 			{
@@ -173,11 +173,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 	while(mainWindow.isOpen())
 	{
-		while(mainWindow.pollEvent(event))
-		{
-			if(event.type == sf::Event::Closed)
-				mainWindow.close();
-		}
+		if( isWindowClosed() ) return;
 
 		//###FINISH###
 		if(contextCar.getFinishState())
@@ -193,6 +189,8 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 			while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 			{
+				if( isWindowClosed() ) return;	
+
 				mainWindow.clear(sf::Color::Black);
 				drawBarriers(contextTrack);	
 				drawCar(contextCar);
@@ -207,7 +205,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		contextTrack.trackMove(contextCar);
 		manualController.move(contextCar);	
 		contextCar.calculateNewPosition();
-
+		//### ~computations ###
 		
 		//### car info
 		contextCar.getCPMovementInfo( contextCarPMI, contextTrack);	

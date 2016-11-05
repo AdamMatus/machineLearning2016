@@ -33,6 +33,18 @@ private:
 		mainWindow.display();
 		waitForNextFrame();
 	}
+	bool isWindowClosed() 
+	{
+		while(mainWindow.pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+			{
+				mainWindow.close();
+				return true;
+			}
+		} 
+		return false;
+	}
 	void drawCarInfo(const Car&, const CarPredictedMovementInfo&);
 
 	sf::RectangleShape mouseDrawingBarriersDetection();
@@ -41,7 +53,7 @@ public:
 
 	Printer(unsigned int, unsigned int);
 	void testPoll(Track& contextTrack, Car& contextCar);
-	void letUserDrawBarriers(Track& tr);
+	bool letUserDrawBarriers(Track& tr);
 };
 
 #endif
