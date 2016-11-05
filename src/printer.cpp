@@ -198,6 +198,10 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				mainWindow.display();
 				waitForNextFrame();
 			}
+		} 
+		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			contextCar.resetCar();			
 		}
 		//###~FINISH###
 
