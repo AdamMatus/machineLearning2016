@@ -26,6 +26,13 @@ private:
 		mainWindow.draw(car_rs);	
 	} 
 	void waitForNextFrame();
+	void doBarrierGraphicsAndEndFrame(const Track& contextTrack)
+	{
+		mainWindow.clear(sf::Color::Black);
+		drawBarriers(contextTrack);
+		mainWindow.display();
+		waitForNextFrame();
+	}
 	void drawCarInfo(const Car&, const CarPredictedMovementInfo&);
 
 	sf::RectangleShape mouseDrawingBarriersDetection();

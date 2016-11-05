@@ -15,8 +15,10 @@ void Printer::letUserDrawBarriers(Track& contextTrack)
 {
 
 	sf::RectangleShape finishRect;
-	do{ //TODO add thread or smth
+	do{ 
 		finishRect = mouseDrawingBarriersDetection();
+		doBarrierGraphicsAndEndFrame(contextTrack);
+		
 	} while(finishRect.getSize().x == 0 || finishRect.getSize().y == 0);
 	contextTrack.add_finish_barrier(finishRect);
 
@@ -26,14 +28,8 @@ void Printer::letUserDrawBarriers(Track& contextTrack)
 		if(barrierRect.getSize().x > 0 && barrierRect.getSize().y > 0)
 			contextTrack.add_barrier(barrierRect);
 
-		//graphics
-		mainWindow.clear(sf::Color::Black);
-		drawBarriers(contextTrack);
-		mainWindow.display();
-		waitForNextFrame();
-		//
+		doBarrierGraphicsAndEndFrame(contextTrack);
 	}
-
 	return;
 }
 
