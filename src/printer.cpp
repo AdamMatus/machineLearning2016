@@ -99,7 +99,6 @@ sf::RectangleShape Printer::mouseDrawingBarriersDetection()
 void Printer::drawBarriers(const Track& contextTrack)
 {
 	sf::RectangleShape rs(sf::Vector2f(0,0));
-	rs.setFillColor(sf::Color::Red);
 	while(contextTrack.getNextRectToDraw(rs))
 		mainWindow.draw(rs);
 }
@@ -125,7 +124,6 @@ void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo&
 						"End veloc versor is: " + std::to_string(cpmi.endVelVersor.x) + "x " +	//
 						std::to_string(cpmi.endVelVersor.y) + "y" + '\n' 
 						;
-	
 
 	carInfoText.setString(carMesg);
 	carInfoText.setPosition(0,0);
@@ -171,12 +169,12 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0)};
 
-	if(!arial.loadFromFile("arial.ttf"))
+	if(!arial.loadFromFile("aux/arial.ttf"))
 	{
 		return;
 	}
-	sf::Text contextCarInfoText;
 
+	sf::Text contextCarInfoText;
 
 	while(mainWindow.isOpen())
 	{

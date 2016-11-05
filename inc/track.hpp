@@ -16,6 +16,7 @@ public:
 
 	Track(const sf::Vector2u& winSize)
 	{
+
 		//barriers.push_back(windowConstrains);	//TODO ?? is it necessery to
 		//implement? maybe just remb winSize
 	}
@@ -53,13 +54,15 @@ private:
 	class Barrier;
 	std::vector<std::unique_ptr<Barrier>> barriers;
 
+
 	class Barrier{
 	public:
 		bool testConstrains(const Car& contextCar);
-		sf::RectangleShape getBarrierRect() const
+		virtual sf::RectangleShape getBarrierRect() const
 		{
 			sf::RectangleShape rs(sf::Vector2f(xConstrains.y-xConstrains.x,yConstrains.y-yConstrains.x));
 			rs.setPosition(xConstrains.x, yConstrains.x); //up-left corner
+			rs.setFillColor(sf::Color::White);
 			return rs;
 		}
 		virtual	void interactWithBarrier(Car& contextCar);
@@ -79,13 +82,51 @@ private:
 			}
 	}; //~Barrier class def
 
+	class TexturedBarrier : public Barrier {
+		public:
+			TexturedBarrier(sf::Vector2f xCon, sf::Vector2f yCon) :
+				Barrier(xCon, yCon) 
+			{
+				if(!texBarrier.loadFromFile("aux/barrier.png"))
+				{
+					return;
+				}
+			}
+
+			sf::RectangleShape getBarrierRect() const
+			{
+				auto rs =	Barrier::getBarrierRect();
+				rs.setTexture(&texBarrier);
+				return rs;
+			}
+			~TexturedBarrier() { }
+
+		private:
+			sf::Texture texBarrier;
+
+	}; //~textured barrier
+
 	class FinishBarrier : public Barrier {
 		public:
 			FinishBarrier(sf::Vector2f xCon, sf::Vector2f yCon) :
 				Barrier(xCon, yCon)
-		{}
+			{
+				if(!checkeredTexture.loadFromFile("aux/checkered.png"))
+				{
+					return;
+				}
+			}
+
+			sf::RectangleShape getBarrierRect() const
+			{
+				auto rs =	Barrier::getBarrierRect();
+				rs.setTexture(&checkeredTexture);
+				return rs;
+			}
 			void interactWithBarrier(Car& car);
-			~FinishBarrier() {};
+			~FinishBarrier() {}
+		private:
+			sf::Texture checkeredTexture;
 
 	}; //~FinishBarrier class def
 

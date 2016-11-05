@@ -18,12 +18,12 @@ void Track::add_barrier(const sf::RectangleShape& rs)
 	sf::Vector2f yConstrains = sf::Vector2f(rs.getPosition().y,
 																					rs.getPosition().y + rs.getSize().y) ;
 	
-	barriers.push_back(std::unique_ptr<Barrier>(new Barrier{xConstrains, yConstrains}));
+	barriers.push_back(std::unique_ptr<Barrier>(new TexturedBarrier{xConstrains, yConstrains}));
 }
 
 void Track::add_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
 {
-	barriers.push_back(std::unique_ptr<Barrier>{new Barrier(xCon, yCon)}); //TODO throw exce if xCon.x < xCon.y etc.
+	barriers.push_back(std::unique_ptr<Barrier>{new TexturedBarrier(xCon, yCon)}); //TODO throw exce if xCon.x < xCon.y etc.
 }
 
 void Track::add_finish_barrier(sf::Vector2f xCon, sf::Vector2f yCon)
