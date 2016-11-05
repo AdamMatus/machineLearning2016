@@ -20,8 +20,12 @@ private:
 	void drawBarriers(const Track& tr);
 	void drawCar(const Car& c) 
 	{
-		sf::RectangleShape car_rs(c.getSize());
-		car_rs.setPosition(c.getPosition());
+		sf::CircleShape car_rs(c.getSize().x);
+		auto position = c.getPosition();
+		position.x -= c.getSize().x;
+		position.y -= c.getSize().y;
+	
+		car_rs.setPosition(position);
 		car_rs.setFillColor(sf::Color::Red);
 		mainWindow.draw(car_rs);	
 	} 
