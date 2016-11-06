@@ -9,8 +9,16 @@ Car::Car(float acc, sf::Vector2f pos, sf::Vector2f siz) :
 	lastPosition{pos},
 	start_position{pos},
  	size{siz},
-	onFinish{false}
-{}
+	onFinish{false},
+	wysockiCircle(sf::CircleShape(siz.x))
+{
+	if(!wysockiTexture.loadFromFile("aux/wysockiTexture.png"))
+	{
+		return;
+	}
+	initCircle();
+}
+
 
 Car::Car(const Car& cr) :
 	quantum_time{cr.quantum_time},
@@ -20,8 +28,15 @@ Car::Car(const Car& cr) :
 	lastPosition{cr.lastPosition},
 	start_position{cr.start_position},
 	size{cr.size},
-	onFinish{cr.onFinish}
-{}
+	onFinish{cr.onFinish},
+	wysockiCircle(sf::CircleShape(cr.size.x))
+{
+	if(!wysockiTexture.loadFromFile("aux/wysockiTexture.png"))
+	{
+		return;
+	}
+	initCircle();
+}
 
 void Car::accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc) //acc is outside force
 {

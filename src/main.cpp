@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 
 	//TEST CAR
-	auto doggoSize = sf::Vector2f(25,25);
+	auto doggoSize = sf::Vector2f(60,25);
 	sf::Vector2<float> doggoStartPos;
 	doggoStartPos.x	= static_cast<float>(winSize.x);
 	doggoStartPos.y	= static_cast<float>(winSize.y);
