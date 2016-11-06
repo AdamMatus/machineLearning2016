@@ -36,6 +36,10 @@ public:
 	{
 		return size;
 	}
+	const sf::Vector2f& getAcceleration() const
+	{
+		return acceleration;
+	}
 
 	void resetCar()
 	{

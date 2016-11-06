@@ -103,7 +103,7 @@ void Printer::drawBarriers(const Track& contextTrack)
 		mainWindow.draw(rs);
 }
 
-void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo& cpmi)
+void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo& cpmi, const CarPredictedMovementInfo& normalized_cpmi)
 {
 	sf::Text carInfoText;
 
@@ -113,18 +113,24 @@ void Printer::drawCarInfo(const Car& contextCar, const CarPredictedMovementInfo&
 	carInfoText.setColor(sf::Color::Red);
 
 	std::string carMesg = 
-						"Speed of Car: " + std::to_string(contextCar.getVelocity().x)+"x "+			//
-						std::to_string(contextCar.getVelocity().y) + "y" + '\n' + 							//
-						"Position of Car: " + std::to_string(contextCar.getPosition().x) +"x "+	//
-						std::to_string(contextCar.getPosition().y) + "y" + '\n'+								//
-						"R1 predict vec is: " + std::to_string(cpmi.relPosVec1.x) + "x " +			//
-						std::to_string(cpmi.relPosVec1.y) + "y" + '\n' +												//
-						"R2 predict vec is: " + std::to_string(cpmi.relPosVec2.x) + "x " +			//
-						std::to_string(cpmi.relPosVec2.y) + "y" + '\n' +												//
-						"End veloc versor is: " + std::to_string(cpmi.endVelVersor.x) + "x " +	//
-						std::to_string(cpmi.endVelVersor.y) + "y" + '\n'  +
-						"Vector to Finish is: " + std::to_string(cpmi.vectorToFinishBarrier.x) + "x " +			//
-						std::to_string(cpmi.vectorToFinishBarrier.y) + "y" + '\n'  												//
+						"Speed of Car: " + 
+						std::to_string(contextCar.getVelocity().x/contextCar.getAcceleration().x)+"x "+
+						std::to_string(contextCar.getVelocity().y/contextCar.getAcceleration().y) + "y"+
+					 	'\n'+
+						"Position of Car: "+
+					 	std::to_string(contextCar.getPosition().x/contextCar.getAcceleration().x) +"x "+
+						std::to_string(contextCar.getPosition().y/contextCar.getAcceleration().y) + "y"+
+					 	'\n'+
+						"R1 predict vec is: " + std::to_string(normalized_cpmi.relPosVec1.x) + "x " +
+						std::to_string(normalized_cpmi.relPosVec1.y) + "y" + '\n' +
+						"R2 predict vec is: " + std::to_string(normalized_cpmi.relPosVec2.x) + "x " +
+						std::to_string(normalized_cpmi.relPosVec2.y) + "y" + '\n' +
+						"End veloc versor is: "+
+					 	std::to_string(normalized_cpmi.endVelVersor.x)+"x "+
+						std::to_string(normalized_cpmi.endVelVersor.y)+"y"+'\n'+
+						"Vector to Finish is: "+
+					 	std::to_string(normalized_cpmi.vectorToFinishBarrier.x) + "x " +
+						std::to_string(normalized_cpmi.vectorToFinishBarrier.y) + "y" + '\n'  												//
 						;
 
 	carInfoText.setString(carMesg);
@@ -181,6 +187,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0)};
+	CarPredictedMovementInfo normalizedContextCarPMI = contextCarPMI;
 
 	if(!arial.loadFromFile("aux/arial.ttf"))
 	{
@@ -231,12 +238,22 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		
 		//### car info
 		contextCar.getCPMovementInfo( contextCarPMI, contextTrack);	
+		normalizedContextCarPMI.relPosVec1.x=contextCarPMI.relPosVec1.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.relPosVec1.y=contextCarPMI.relPosVec1.y/contextCar.getAcceleration().y;
+		normalizedContextCarPMI.relPosVec2.x=contextCarPMI.relPosVec2.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.relPosVec2.y=contextCarPMI.relPosVec2.y/contextCar.getAcceleration().y;
+
+		normalizedContextCarPMI.endVelVersor.x=contextCarPMI.endVelVersor.x;
+		normalizedContextCarPMI.endVelVersor.y=contextCarPMI.endVelVersor.y;
+
+		normalizedContextCarPMI.vectorToFinishBarrier.x=contextCarPMI.vectorToFinishBarrier.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.vectorToFinishBarrier.y=contextCarPMI.vectorToFinishBarrier.y/contextCar.getAcceleration().y;
 		//### ~car info
 
 		mainWindow.clear(sf::Color::Black);
 		drawBarriers(contextTrack);	
 		drawCar(contextCar);
-		drawCarInfo(contextCar, contextCarPMI);
+		drawCarInfo(contextCar, contextCarPMI, normalizedContextCarPMI);
 		mainWindow.display();
 
 		waitForNextFrame();

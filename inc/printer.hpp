@@ -49,7 +49,7 @@ private:
 		} 
 		return false;
 	}
-	void drawCarInfo(const Car&, const CarPredictedMovementInfo&);
+	void drawCarInfo(const Car&, const CarPredictedMovementInfo&, const CarPredictedMovementInfo& normalizedCPMI);
 
 	sf::RectangleShape mouseDrawingBarriersDetection();
 
