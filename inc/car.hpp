@@ -47,7 +47,13 @@ public:
 	void accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );
 	void calculateNewPosition();
 	void getCPMovementInfo(CarPredictedMovementInfo& ,Track&) const; 
-	
+
+	sf::CircleShape getCarCircle() 
+	{
+		wysockiCircle.rotate(10);
+		wysockiCircle.setPosition(position);
+		return wysockiCircle;
+	}	
 
 private:
 	static const int max_size_of_sight = 50; // maximium quantums of time for prediction
@@ -56,6 +62,17 @@ private:
 	sf::Vector2f start_position;
 	sf::Vector2f size;
 	bool onFinish;
+
+	sf::CircleShape	wysockiCircle;
+
+	void initCircle()
+	{
+		wysockiCircle.setPosition(position);
+		wysockiCircle.setOrigin(wysockiCircle.getRadius(),wysockiCircle.getRadius());
+		wysockiCircle.setTexture(&wysockiTexture);
+	}
+
+	sf::Texture wysockiTexture;
 
 }; //~Car
 

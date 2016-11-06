@@ -18,16 +18,9 @@ private:
 	sf::Font arial;
 
 	void drawBarriers(const Track& tr);
-	void drawCar(const Car& c) 
+	void drawCar(Car& c) 
 	{
-		sf::CircleShape car_rs(c.getSize().x);
-		auto position = c.getPosition();
-		position.x -= c.getSize().x;
-		position.y -= c.getSize().y;
-	
-		car_rs.setPosition(position);
-		car_rs.setFillColor(sf::Color::Red);
-		mainWindow.draw(car_rs);	
+		mainWindow.draw(c.getCarCircle());	
 	} 
 	void waitForNextFrame();
 	void doBarrierGraphicsAndEndFrame(const Track& contextTrack)
