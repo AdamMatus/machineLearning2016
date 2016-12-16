@@ -51,6 +51,7 @@ public:
 	void accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );
 	void calculateNewPosition();
 	void getCPMovementInfo(CarPredictedMovementInfo& ,Track&) const; 
+	void getNormalizedCPMovementInfo(CarPredictedMovementInfo& contextCarPMI, Track& contextTrack) const;
 	
 
 private:

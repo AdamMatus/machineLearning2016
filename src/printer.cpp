@@ -4,6 +4,9 @@
 #include <chrono>
 #include <thread>
 
+//TODO
+#include <floatfann.h>
+
 //only constructor
 Printer::Printer(unsigned int width, unsigned int hight):
 	mainWindow(sf::VideoMode(width, hight), "Driving doggo rectangles.")	
@@ -181,8 +184,18 @@ void Printer::waitForNextFrame()
 
 void Printer::testPoll(Track& contextTrack, Car& contextCar)
 {
+	//fann
+	
+	struct fann *ann = fann_create_standard(3,10,10,2);
+	fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
+	fann_train_on_file(ann, "train.data", 200, 10, 0.01);
+
+	fann_save(ann, "car.net");
+	
+	//~fann
 
 	KeyboardController manualController;	
+	ANNController testAnnController;
 	CarPredictedMovementInfo contextCarPMI{	sf::Vector2f(50,50),
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0),
@@ -229,26 +242,83 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 			contextCar.resetCar();			
 		}
 		//###~FINISH###
+	
 
 		//###computations###
 		contextTrack.trackMove(contextCar);
-		manualController.move(contextCar);	
+		//TODO new car	
+		//////////////////manualController.move(contextCar);	
+		
+		//fann TODO
+		testAnnController.move(contextCar, ann, contextTrack);
+		
+		//~fann
 		contextCar.calculateNewPosition();
 		//### ~computations ###
 		
 		//### car info
-		contextCar.getCPMovementInfo( contextCarPMI, contextTrack);	
-		normalizedContextCarPMI.relPosVec1.x=contextCarPMI.relPosVec1.x/contextCar.getAcceleration().x;
-		normalizedContextCarPMI.relPosVec1.y=contextCarPMI.relPosVec1.y/contextCar.getAcceleration().y;
-		normalizedContextCarPMI.relPosVec2.x=contextCarPMI.relPosVec2.x/contextCar.getAcceleration().x;
-		normalizedContextCarPMI.relPosVec2.y=contextCarPMI.relPosVec2.y/contextCar.getAcceleration().y;
-
-		normalizedContextCarPMI.endVelVersor.x=contextCarPMI.endVelVersor.x;
-		normalizedContextCarPMI.endVelVersor.y=contextCarPMI.endVelVersor.y;
-
-		normalizedContextCarPMI.vectorToFinishBarrier.x=contextCarPMI.vectorToFinishBarrier.x/contextCar.getAcceleration().x;
-		normalizedContextCarPMI.vectorToFinishBarrier.y=contextCarPMI.vectorToFinishBarrier.y/contextCar.getAcceleration().y;
+		contextCar.getCPMovementInfo(contextCarPMI, contextTrack );
+		contextCar.getNormalizedCPMovementInfo(normalizedContextCarPMI, contextTrack);
 		//### ~car info
+		
+		//fann train file generation
+		
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		{
+			std::ofstream tf;
+			tf.open("train.data", std::ios::app | std::ios::out);
+
+			tf << normalizedContextCarPMI.vectorToFinishBarrier.x;
+			tf << " ";
+			tf << normalizedContextCarPMI.vectorToFinishBarrier.y;
+			tf << " ";
+			tf << contextCar.getVelocity().x/contextCar.getAcceleration().x;
+			tf << " ";
+			tf << contextCar.getVelocity().y/contextCar.getAcceleration().y;
+			tf << " ";
+			tf << normalizedContextCarPMI.relPosVec1.x;
+			tf << " ";
+			tf << normalizedContextCarPMI.relPosVec1.y;
+			tf << " ";
+			tf << normalizedContextCarPMI.relPosVec2.x;
+			tf << " ";
+			tf << normalizedContextCarPMI.relPosVec2.y;
+			tf << " ";
+			tf << normalizedContextCarPMI.endVelVersor.x;
+			tf << " ";
+			tf << normalizedContextCarPMI.endVelVersor.y;
+			tf << "\n\n";
+
+			sf::Vector2f dir(0,0);
+			while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+			{
+				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+						dir.y=-1;
+				else	
+				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+					dir.y=1;
+
+	
+				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+					dir.x=1;
+				else
+				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+					dir.x=-1;
+
+				mainWindow.clear(sf::Color::Black);
+				drawBarriers(contextTrack);	
+				drawCar(contextCar);
+				mainWindow.display();
+				waitForNextFrame();
+			}
+
+			tf << dir.x;
+			tf << " ";
+			tf << dir.y;
+			tf << "\n\n";
+
+			tf.close();
+		}//~fann 
 
 		mainWindow.clear(sf::Color::Black);
 		drawBarriers(contextTrack);	
@@ -257,6 +327,9 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		mainWindow.display();
 
 		waitForNextFrame();
+
 	}
-}
+	//fann
+	fann_destroy(ann);
+} //~testPoll
 

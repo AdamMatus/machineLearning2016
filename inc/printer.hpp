@@ -4,8 +4,12 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <vector>
+//fann
+#include <fann.h>
+#include <iostream>
+#include <fstream>
 
+#include <vector>
 #include <car.hpp>
 #include <track.hpp>
 

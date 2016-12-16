@@ -1,5 +1,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+
 #include <thread>
 #include <string>
 #include <chrono>

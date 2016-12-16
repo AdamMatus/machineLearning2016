@@ -39,7 +39,7 @@ void Car::calculateNewPosition() // call only once in quantum time
 
 void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, Track& contextTrack) const
 {
-	Car contextCar(*this);	
+	Car contextCar(*this);
 
 	int cycle_index = 0;
 	sf::Vector2f lastPosition= contextCar.getPosition();
@@ -63,4 +63,22 @@ void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, Track& contextTrack)
 	cpmi.endVelVersor = endVelVer;
 
 	cpmi.vectorToFinishBarrier = contextTrack.getVectorToLastFinishBarrier(*this);
+}
+
+void Car::getNormalizedCPMovementInfo(CarPredictedMovementInfo& normalizedContextCarPMI, Track& contextTrack) const
+{
+	Car contextCar(*this);	
+
+		CarPredictedMovementInfo contextCarPMI;
+		contextCar.getCPMovementInfo( contextCarPMI, contextTrack);	
+		normalizedContextCarPMI.relPosVec1.x=contextCarPMI.relPosVec1.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.relPosVec1.y=contextCarPMI.relPosVec1.y/contextCar.getAcceleration().y;
+		normalizedContextCarPMI.relPosVec2.x=contextCarPMI.relPosVec2.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.relPosVec2.y=contextCarPMI.relPosVec2.y/contextCar.getAcceleration().y;
+
+		normalizedContextCarPMI.endVelVersor.x=contextCarPMI.endVelVersor.x;
+		normalizedContextCarPMI.endVelVersor.y=contextCarPMI.endVelVersor.y;
+
+		normalizedContextCarPMI.vectorToFinishBarrier.x=contextCarPMI.vectorToFinishBarrier.x/contextCar.getAcceleration().x;
+		normalizedContextCarPMI.vectorToFinishBarrier.y=contextCarPMI.vectorToFinishBarrier.y/contextCar.getAcceleration().y;
 }

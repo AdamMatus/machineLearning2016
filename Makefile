@@ -4,10 +4,10 @@ SOURCES=src/main.cpp src/car.cpp src/printer.cpp src/controller.cpp
 OBJECTS=main.o car.o printer.o track.o controller.o
 EXECUTABLE=AI
 PROJ_PATH_HEADERS=../inc/
-SFMLLIBS=-lsfml-graphics -lsfml-window -lsfml-system
+LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lfann
 
 AI: $(OBJECTS)
-	$(CC) $(CFLAGS) -o AI $(OBJECTS) $(SFMLLIBS)
+	$(CC) $(CFLAGS) -o AI $(OBJECTS) $(LIBS)
 
 main.o: $(SOURCES)
 	$(CC) -c $(CFLAGS) src/main.cpp 
