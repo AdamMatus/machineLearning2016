@@ -1,7 +1,7 @@
 CC=g++ -std=c++11 -Iinc/
 CFLAGS=-Wall -g3 -O0
-SOURCES=src/main.cpp src/car.cpp src/printer.cpp src/controller.cpp
-OBJECTS=main.o car.o printer.o track.o controller.o
+SOURCES=src/main.cpp src/car.cpp src/printer.cpp src/controller.cpp src/terminal.cpp
+OBJECTS=main.o car.o printer.o track.o controller.o terminal.o
 EXECUTABLE=AI
 PROJ_PATH_HEADERS=../inc/
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lfann
@@ -23,6 +23,9 @@ track.o: src/track.cpp inc/track.hpp
 
 controller.o: src/controller.cpp inc/controller.hpp
 	$(CC) -c $(CFLAGS) src/controller.cpp
+
+terminal.o: src/terminal.cpp inc/terminal.hpp
+	$(CC) -c $(CFLAGS) src/terminal.cpp
 
 clean: 
 	rm $(OBJECTS) AI

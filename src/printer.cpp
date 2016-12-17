@@ -8,10 +8,17 @@
 #include <floatfann.h>
 
 //only constructor
-Printer::Printer(unsigned int width, unsigned int hight):
-	mainWindow(sf::VideoMode(width, hight), "Driving doggo rectangles.")	
+Printer::Printer(unsigned int w, unsigned int h):
+	mainWindow(sf::VideoMode(w, h), "Driving doggo rectangles."),
+	width(w),
+	hight(h)	
 {
 	mainWindow.setVerticalSyncEnabled(true);
+
+	if(!arial.loadFromFile("aux/arial.ttf"))
+	{
+		return;
+	}
 }
 
 bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
@@ -99,6 +106,16 @@ sf::RectangleShape Printer::mouseDrawingBarriersDetection()
 	return barrierRect;
 }
 
+void Printer::drawTerminal(const Terminal& term)
+{
+	sf::RectangleShape terminalRect = term.getRectToDraw();
+	sf::Text testText = term.getNextTextToDraw();
+	testText.setFont(arial);
+
+	mainWindow.draw(terminalRect);
+	mainWindow.draw(testText);
+}
+
 void Printer::drawBarriers(const Track& contextTrack)
 {
 	sf::RectangleShape rs(sf::Vector2f(0,0));
@@ -184,16 +201,20 @@ void Printer::waitForNextFrame()
 
 void Printer::testPoll(Track& contextTrack, Car& contextCar)
 {
-	//fann
-	
+	//fann creation and training
 	struct fann *ann = fann_create_standard(3,10,10,2);
 	fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 	fann_train_on_file(ann, "train.data", 200, 10, 0.01);
 
 	fann_save(ann, "car.net");
-	
-	//~fann
+	//~fann creation and training
+	//
+	//terminal init
 
+	Terminal terminal(width/2, hight/2);
+	terminal.setPosition(width/4, hight/4);
+	
+	//#controllers init
 	KeyboardController manualController;	
 	ANNController testAnnController;
 	CarPredictedMovementInfo contextCarPMI{	sf::Vector2f(50,50),
@@ -201,19 +222,43 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 																					sf::Vector2f(0,0),
 																					sf::Vector2f(0,0)};
 	CarPredictedMovementInfo normalizedContextCarPMI = contextCarPMI;
+	//~controllers init
 
-	if(!arial.loadFromFile("aux/arial.ttf"))
-	{
-		return;
-	}
-
+	
+	//Cars info sf:texts
 	sf::Text contextCarInfoText;
+	//~cars info textxs
 
 	while(mainWindow.isOpen())
 	{
-		if( isWindowClosed() ) return;
+		while(mainWindow.pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+			{
+				mainWindow.close();
+				return;
+			}
 
-		//###FINISH###
+			if(terminal.isTerminalOpen() and event.type == sf::Event::TextEntered)
+			{
+				terminal.put(static_cast<char>(event.text.unicode));		
+			}//~text entered
+
+			if(event.type == sf::Event::KeyReleased and event.key.code == sf::Keyboard::T)
+			{
+					if(terminal.isTerminalOpen())	
+					{
+						terminal.deActivateTerminal();
+					}
+					else
+					{
+						terminal.activateTerminal();
+					}
+			} //~T key released
+
+		}
+
+		//###FINISH state###
 		if(contextCar.getFinishState())
 		{
 			contextCar.resetCar();
@@ -233,7 +278,9 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				drawBarriers(contextTrack);	
 				drawCar(contextCar);
 				mainWindow.draw(finishInfoText);
+				if(terminal.isTerminalOpen()) drawTerminal(terminal);
 				mainWindow.display();
+				if(terminal.isTerminalOpen()) drawTerminal(terminal);
 				waitForNextFrame();
 			}
 		} 
@@ -241,27 +288,26 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		{
 			contextCar.resetCar();			
 		}
-		//###~FINISH###
+		//###~FINISH state###
+		
 	
 
-		//###computations###
-		contextTrack.trackMove(contextCar);
-		//TODO new car	
-		//////////////////manualController.move(contextCar);	
+		//###computations made to CARS###
+		contextTrack.trackMove(contextCar); // TRACK caused ACCELERATION
+
+		//TODO: let in some way displaying user controled car
+		//manualController.move(contextCar);	
+		testAnnController.move(contextCar, ann, contextTrack); // CONTROLLER cause ACCELERATION
 		
-		//fann TODO
-		testAnnController.move(contextCar, ann, contextTrack);
-		
-		//~fann
-		contextCar.calculateNewPosition();
+		contextCar.calculateNewPosition(); // compute new position after acceleration
 		//### ~computations ###
 		
-		//### car info
+		//### cars info
 		contextCar.getCPMovementInfo(contextCarPMI, contextTrack );
 		contextCar.getNormalizedCPMovementInfo(normalizedContextCarPMI, contextTrack);
 		//### ~car info
 		
-		//fann train file generation
+		//new single trainning info for ANN
 		
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		{
@@ -309,6 +355,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				drawBarriers(contextTrack);	
 				drawCar(contextCar);
 				mainWindow.display();
+				if(terminal.isTerminalOpen()) drawTerminal(terminal);
 				waitForNextFrame();
 			}
 
@@ -324,6 +371,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		drawBarriers(contextTrack);	
 		drawCar(contextCar);
 		drawCarInfo(contextCar, contextCarPMI, normalizedContextCarPMI);
+		if(terminal.isTerminalOpen()) drawTerminal(terminal);
 		mainWindow.display();
 
 		waitForNextFrame();

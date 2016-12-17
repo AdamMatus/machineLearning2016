@@ -12,7 +12,8 @@
 int main(int argc, char *argv[])
 {
 	//PRINTER +++
-	auto winSize = sf::Vector2u(1400,900);
+	if(argc < 3) return -1;
+	auto winSize = sf::Vector2u(std::stoi(argv[1]),std::stoi(argv[2]));
 	Printer mainPrinter(winSize.x, winSize.y);
 	//++++++++++++
 
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 	/********************/
 
 	//DRAWING BARRIERS
-	if(mainPrinter.letUserDrawBarriers(mainTrack)) return 0; //add exception 
+	if(mainPrinter.letUserDrawBarriers(mainTrack)) return -1; //add exception 
 	//++++++++++++++++++
 
 

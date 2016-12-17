@@ -12,6 +12,7 @@
 #include <vector>
 #include <car.hpp>
 #include <track.hpp>
+#include <terminal.hpp>
 
 const auto basic_quantum_time = std::chrono::milliseconds(25);
 
@@ -21,6 +22,7 @@ private:
 	sf::Event event;
 	sf::Font arial;
 
+	void drawTerminal(const Terminal&);
 	void drawBarriers(const Track& tr);
 	void drawCar(const Car& c) 
 	{
@@ -41,7 +43,7 @@ private:
 		mainWindow.display();
 		waitForNextFrame();
 	}
-	bool isWindowClosed() 
+	bool isWindowClosed() //watch out that this function disables all event pending
 	{
 		while(mainWindow.pollEvent(event))
 		{
@@ -56,6 +58,8 @@ private:
 	void drawCarInfo(const Car&, const CarPredictedMovementInfo&, const CarPredictedMovementInfo& normalizedCPMI);
 
 	sf::RectangleShape mouseDrawingBarriersDetection();
+	unsigned int width;
+	unsigned int hight;
 
 public:
 
