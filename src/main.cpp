@@ -21,17 +21,6 @@ int main(int argc, char *argv[])
 	Track mainTrack(winSize);
 	//++++++++++++
 
-	//single test barrier
-	auto testBarrier = sf::RectangleShape(sf::Vector2f(100, 50));
-	testBarrier.setPosition(200,300);
-	testBarrier.setFillColor(sf::Color::Green);
-
-	mainTrack.add_barrier(testBarrier);
-
-	testBarrier.setPosition(700, 300);
-	mainTrack.add_barrier(testBarrier);
-	/********************/
-
 	//DRAWING BARRIERS
 	if(mainPrinter.letUserDrawBarriers(mainTrack)) return -1; //add exception 
 	//++++++++++++++++++

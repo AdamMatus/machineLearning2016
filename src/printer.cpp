@@ -32,15 +32,19 @@ bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
 	} while(finishRect.getSize().x == 0 || finishRect.getSize().y == 0);
 	contextTrack.add_finish_barrier(finishRect);
 
-	while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+	letUserDrawSingleBarrier(contextTrack); 
+	return false;
+}
+
+void Printer::letUserDrawSingleBarrier(Track& contextTrack)
+{
+	while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 	{
 		auto barrierRect = mouseDrawingBarriersDetection();
 		if(barrierRect.getSize().x > 0 && barrierRect.getSize().y > 0)
 			contextTrack.add_barrier(barrierRect);
-
 		doBarrierGraphicsAndEndFrame(contextTrack);
 	}
-	return false;
 }
 
 sf::RectangleShape Printer::mouseDrawingBarriersDetection()
@@ -109,11 +113,16 @@ sf::RectangleShape Printer::mouseDrawingBarriersDetection()
 void Printer::drawTerminal(const Terminal& term)
 {
 	sf::RectangleShape terminalRect = term.getRectToDraw();
-	sf::Text testText = term.getNextTextToDraw();
-	testText.setFont(arial);
-
 	mainWindow.draw(terminalRect);
-	mainWindow.draw(testText);
+
+	sf::Text textToDraw;
+	textToDraw.setFont(arial);
+	while( term.getNextTextToDraw(textToDraw) )
+	{
+		mainWindow.draw(textToDraw);
+	}
+
+	mainWindow.draw(textToDraw);
 }
 
 void Printer::drawBarriers(const Track& contextTrack)
@@ -231,6 +240,9 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 	while(mainWindow.isOpen())
 	{
+
+	auto command_str = std::string();	
+
 		while(mainWindow.pollEvent(event))
 		{
 			if(event.type == sf::Event::Closed)
@@ -239,22 +251,36 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				return;
 			}
 
-			if(terminal.isTerminalOpen() and event.type == sf::Event::TextEntered)
+			if(event.type == sf::Event::TextEntered)
 			{
-				terminal.put(static_cast<char>(event.text.unicode));		
-			}//~text entered
-
-			if(event.type == sf::Event::KeyReleased and event.key.code == sf::Keyboard::T)
-			{
-					if(terminal.isTerminalOpen())	
+				auto contextUnicode = static_cast<char>(event.text.unicode);
+				if(terminal.isTerminalOpen())
+				{
+					if(! (contextUnicode == '\\'))
+					{
+						if( contextUnicode == '\r' )
+						{
+							auto str = terminal.end_command();
+							command_str = str;
+						}
+						else
+						{
+							terminal.put(static_cast<char>(contextUnicode));		
+						}
+					}	
+					else
 					{
 						terminal.deActivateTerminal();
 					}
-					else
+				}
+				else // terminal not open
+				{
+					if(contextUnicode == '\\')
 					{
 						terminal.activateTerminal();
 					}
-			} //~T key released
+				}
+			} // ~textEvent
 
 		}
 
@@ -262,33 +288,31 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		if(contextCar.getFinishState())
 		{
 			contextCar.resetCar();
-			
-			sf::Text finishInfoText;
-			finishInfoText.setFont(arial);
-			finishInfoText.setColor(sf::Color::Blue);
-			finishInfoText.setString(std::string("FINISHED"));
-			finishInfoText.setCharacterSize(30UL);
-			finishInfoText.setPosition(500,500);
-
-			while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-			{
-				if( isWindowClosed() ) return;	
-
-				mainWindow.clear(sf::Color::Black);
-				drawBarriers(contextTrack);	
-				drawCar(contextCar);
-				mainWindow.draw(finishInfoText);
-				if(terminal.isTerminalOpen()) drawTerminal(terminal);
-				mainWindow.display();
-				if(terminal.isTerminalOpen()) drawTerminal(terminal);
-				waitForNextFrame();
-			}
 		} 
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			contextCar.resetCar();			
 		}
 		//###~FINISH state###
+		
+		//commands
+		if(command_str != std::string())
+		{
+			if(command_str == "reset car")
+			{
+				contextCar.resetCar();	
+			}
+			else if(command_str == "exit")
+			{
+				break;
+			}
+			else if(command_str == "barrier")
+			{
+				terminal.deActivateTerminal();
+				letUserDrawSingleBarrier(contextTrack);
+			}
+		}
+		//~commands
 		
 	
 

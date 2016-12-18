@@ -13,7 +13,22 @@ class Terminal {
 		const std::string& checkForPhrase();
 		void put(char c)
 		{
-			buffer += c;
+				buffer += c;
+		}
+		std::string end_command()
+		{
+			if(!isBufferEmpty())
+			{
+				auto str = std::string(buffer);
+				history.push_back(str);
+				buffer = std::string(); 
+				return std::string(str);
+			}
+			return std::string();
+		}
+		std::string getLastCommand()
+		{
+			return *history.begin();
 		}
 		sf::Vector2f getSize()
 		{
@@ -39,11 +54,9 @@ class Terminal {
 		{
 			state = false;
 		}
-		std::string getActualBuffer()
+		bool isBufferEmpty()
 		{
-			std::string bufferString;
-
-			return bufferString;
+			return buffer == "";
 		}
 		sf::RectangleShape getRectToDraw() const
 		{
@@ -52,7 +65,7 @@ class Terminal {
 			recToDraw.setFillColor(sf::Color(255,255,255,200));
 			return recToDraw;
 		}
-		sf::Text getNextTextToDraw() const;
+		bool getNextTextToDraw(sf::Text&) const;
 
 	private:
 		static const unsigned int text_size = 40;

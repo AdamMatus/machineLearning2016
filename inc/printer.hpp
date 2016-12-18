@@ -66,6 +66,7 @@ public:
 	Printer(unsigned int, unsigned int);
 	void testPoll(Track& contextTrack, Car& contextCar);
 	bool letUserDrawBarriers(Track& tr);
+	void letUserDrawSingleBarrier(Track& contextTrack);
 };
 
 #endif
