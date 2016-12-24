@@ -67,6 +67,7 @@ public:
 	void testPoll(Track& contextTrack, Car& contextCar);
 	bool letUserDrawBarriers(Track& tr);
 	void letUserDrawSingleBarrier(Track& contextTrack);
+	void letUserDrawFinishBarrier(Track & contextTrack);
 };
 
 #endif

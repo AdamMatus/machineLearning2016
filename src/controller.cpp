@@ -42,13 +42,13 @@ void ANNController::updateDirInfoFromANN(struct fann *ann, Car & contextCar, Tra
 		calc_out = fann_run(ann, input);
 		context_dir.x = calc_out[0];
 		context_dir.y = calc_out[1];
-		std::cout << "__pies__" << std::endl;
+		/*
 		for(int i=0; i<2; i++)
 		{
 			std::cout << calc_out[i];
 			std::cout << " ";
-		}
-		std::cout << std::endl;
+		}*/
+		//std::cout << std::endl;
 
 		setDir(context_dir);
 }

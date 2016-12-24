@@ -23,7 +23,13 @@ Printer::Printer(unsigned int w, unsigned int h):
 
 bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
 {
+	letUserDrawFinishBarrier(contextTrack);
+	letUserDrawSingleBarrier(contextTrack); 
+	return false;
+}
 
+void Printer::letUserDrawFinishBarrier(Track& contextTrack)
+{
 	sf::RectangleShape finishRect;
 	do{ 
 		finishRect = mouseDrawingBarriersDetection();
@@ -31,9 +37,6 @@ bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
 		
 	} while(finishRect.getSize().x == 0 || finishRect.getSize().y == 0);
 	contextTrack.add_finish_barrier(finishRect);
-
-	letUserDrawSingleBarrier(contextTrack); 
-	return false;
 }
 
 void Printer::letUserDrawSingleBarrier(Track& contextTrack)
@@ -213,7 +216,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 	//fann creation and training
 	struct fann *ann = fann_create_standard(3,10,10,2);
 	fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
-	fann_train_on_file(ann, "train.data", 200, 10, 0.01);
+	//	fann_train_on_file(ann, "train.data", 200, 10, 0.01);
 
 	fann_save(ann, "car.net");
 	//~fann creation and training
@@ -311,11 +314,17 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				terminal.deActivateTerminal();
 				letUserDrawSingleBarrier(contextTrack);
 			}
+			else if(command_str == "finish barrier")
+			{
+				letUserDrawFinishBarrier(contextTrack);
+			}
+			else if(command_str == "reset track")
+			{
+				contextTrack.clear_all_barriers();	
+			}
 		}
 		//~commands
 		
-	
-
 		//###computations made to CARS###
 		contextTrack.trackMove(contextCar); // TRACK caused ACCELERATION
 
@@ -338,26 +347,19 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 			std::ofstream tf;
 			tf.open("train.data", std::ios::app | std::ios::out);
 
-			tf << normalizedContextCarPMI.vectorToFinishBarrier.x;
-			tf << " ";
-			tf << normalizedContextCarPMI.vectorToFinishBarrier.y;
-			tf << " ";
-			tf << contextCar.getVelocity().x/contextCar.getAcceleration().x;
-			tf << " ";
-			tf << contextCar.getVelocity().y/contextCar.getAcceleration().y;
-			tf << " ";
-			tf << normalizedContextCarPMI.relPosVec1.x;
-			tf << " ";
-			tf << normalizedContextCarPMI.relPosVec1.y;
-			tf << " ";
-			tf << normalizedContextCarPMI.relPosVec2.x;
-			tf << " ";
-			tf << normalizedContextCarPMI.relPosVec2.y;
-			tf << " ";
-			tf << normalizedContextCarPMI.endVelVersor.x;
-			tf << " ";
-			tf << normalizedContextCarPMI.endVelVersor.y;
-			tf << "\n\n";
+			fann_type input[10];
+			fann_type output[2];
+
+			input[0] =  normalizedContextCarPMI.vectorToFinishBarrier.x;
+			input[1] =  normalizedContextCarPMI.vectorToFinishBarrier.y;
+			input[2] =  contextCar.getVelocity().x/contextCar.getAcceleration().x;
+			input[3] =  contextCar.getVelocity().y/contextCar.getAcceleration().y;
+			input[4] =  normalizedContextCarPMI.relPosVec1.x;
+			input[5] =  normalizedContextCarPMI.relPosVec1.y;
+			input[6] =  normalizedContextCarPMI.relPosVec2.x;
+			input[7] =  normalizedContextCarPMI.relPosVec2.y;
+			input[8] =  normalizedContextCarPMI.endVelVersor.x;
+			input[9] =  normalizedContextCarPMI.endVelVersor.y;
 
 			sf::Vector2f dir(0,0);
 			while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
@@ -383,10 +385,10 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 				waitForNextFrame();
 			}
 
-			tf << dir.x;
-			tf << " ";
-			tf << dir.y;
-			tf << "\n\n";
+			output[0] = dir.x;
+			output[1] = dir.y;
+
+			fann_train(ann, input, output);
 
 			tf.close();
 		}//~fann 

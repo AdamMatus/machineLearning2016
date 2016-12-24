@@ -67,16 +67,51 @@ void Track::Barrier::interactWithBarrier(Car& contextCar)
 
 		if(this->testConstrains(contextCar))
 		{
-			bool presentInX = testSingleConstrain(xConstrains, contextCar.getLastPosition().x); //x1<x<x2
-			bool presentInY = testSingleConstrain(yConstrains, contextCar.getLastPosition().y); //y1<y<y2
+			bool pastInX = testSingleConstrain(xConstrains, contextCar.getLastPosition().x); //x1<x<x2
+			bool pastInY = testSingleConstrain(yConstrains, contextCar.getLastPosition().y); //y1<y<y2
 
-			if( presentInX )
+			if( pastInX )
 			{
-				if( presentInY ) return; // [(x1<x<x2) && (y1<y<y2)] is true
+				if( pastInY ) // his last position was within constrains too
+				{
+					auto halfx = xConstrains.y - xConstrains.x;
+					if(contextCar.getPosition().x - halfx > 0 ) // which x constrain is closer
+					{ // car is on the right of the center
+						if(contextCar.getPosition().x - contextCar.getLastPosition().x < 0)
+						{ //car is still moving to the halfx
+							aux_acc.x	= -2*contextCar.getVelocity().x;
+						}
+					}
+					else
+					{
+						if(contextCar.getPosition().x - contextCar.getLastPosition().x > 0)
+						{ //car is still moving to the halfx
+							aux_acc.x	= -2*contextCar.getVelocity().x;
+						}
+					}
+
+					auto halfy = yConstrains.y - yConstrains.x;	
+					if(contextCar.getPosition().y - halfy > 0 ) // which y constrain is closer
+					{ // car is on the right of the center
+						if(contextCar.getPosition().y - contextCar.getLastPosition().y < 0)
+						{ //car is still moving to the halfx
+							aux_acc.y	= -2*contextCar.getVelocity().y;
+						}
+					}
+					else
+					{
+						if(contextCar.getPosition().y - contextCar.getLastPosition().y > 0)
+						{ //car is still moving to the halfx
+							aux_acc.y	= -2*contextCar.getVelocity().y;
+						}
+					}
+				} //~2 last pos within both constrains
+
+				else
 				aux_acc.y = -2*contextCar.getVelocity().y; // collision with upper or downer ?XD? edge
 			}
 
-			else if( presentInY )
+			else if( pastInY )
 			{
 				aux_acc.x = -2*contextCar.getVelocity().x; //collision with left or right edge
 			}
