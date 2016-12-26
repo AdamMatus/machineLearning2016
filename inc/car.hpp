@@ -62,6 +62,8 @@ private:
 	sf::Vector2f size;
 	bool onFinish;
 
+	const float max_vel; //speed limit
+
 }; //~Car
 
 struct CarPredictedMovementInfo

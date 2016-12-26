@@ -9,7 +9,8 @@ Car::Car(float acc, sf::Vector2f pos, sf::Vector2f siz) :
 	lastPosition{pos},
 	start_position{pos},
  	size{siz},
-	onFinish{false}
+	onFinish{false},
+	max_vel{10*acc}
 {}
 
 Car::Car(const Car& cr) :
@@ -20,13 +21,31 @@ Car::Car(const Car& cr) :
 	lastPosition{cr.lastPosition},
 	start_position{cr.start_position},
 	size{cr.size},
-	onFinish{cr.onFinish}
+	onFinish{cr.onFinish},
+	max_vel{cr.max_vel}
 {}
 
 void Car::accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc) //acc is outside force
 {
 	velocity.x += dir.x*acceleration.x + acc.x;	
+	if(velocity.x > max_vel)
+	{
+		velocity.x = max_vel;
+	}
+	else if(velocity.x < - max_vel)
+	{
+		velocity.x = -max_vel;
+	}
+	
 	velocity.y += dir.y*acceleration.y + acc.y;	
+	if(velocity.y > max_vel)
+	{
+		velocity.y = max_vel;
+	}
+	else if(velocity.y < - max_vel)
+	{
+		velocity.y = -max_vel;
+	}
 }
 
 void Car::calculateNewPosition() // call only once in quantum time

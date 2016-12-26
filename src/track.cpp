@@ -74,35 +74,35 @@ void Track::Barrier::interactWithBarrier(Car& contextCar)
 			{
 				if( pastInY ) // his last position was within constrains too
 				{
-					auto halfx = xConstrains.y - xConstrains.x;
+					auto halfx = xConstrains.x + (xConstrains.y - xConstrains.x)/2;
 					if(contextCar.getPosition().x - halfx > 0 ) // which x constrain is closer
 					{ // car is on the right of the center
 						if(contextCar.getPosition().x - contextCar.getLastPosition().x < 0)
 						{ //car is still moving to the halfx
-							aux_acc.x	= -2*contextCar.getVelocity().x;
+							aux_acc.x	= -2*contextCar.getVelocity().x + 1.3*contextCar.getAcceleration().x ;
 						}
 					}
 					else
 					{
 						if(contextCar.getPosition().x - contextCar.getLastPosition().x > 0)
 						{ //car is still moving to the halfx
-							aux_acc.x	= -2*contextCar.getVelocity().x;
+							aux_acc.x	= -2*contextCar.getVelocity().x - 1.3*contextCar.getAcceleration().x;
 						}
 					}
 
-					auto halfy = yConstrains.y - yConstrains.x;	
+					auto halfy = yConstrains.x + ( yConstrains.y - yConstrains.x)/2;	
 					if(contextCar.getPosition().y - halfy > 0 ) // which y constrain is closer
 					{ // car is on the right of the center
 						if(contextCar.getPosition().y - contextCar.getLastPosition().y < 0)
-						{ //car is still moving to the halfx
-							aux_acc.y	= -2*contextCar.getVelocity().y;
+						{ //car is still moving to the halfy
+							aux_acc.y	= -2*contextCar.getVelocity().y + 1.3*contextCar.getAcceleration().y ;
 						}
 					}
 					else
 					{
 						if(contextCar.getPosition().y - contextCar.getLastPosition().y > 0)
 						{ //car is still moving to the halfx
-							aux_acc.y	= -2*contextCar.getVelocity().y;
+							aux_acc.y	= -2*contextCar.getVelocity().y - 1.3*contextCar.getAcceleration().y;
 						}
 					}
 				} //~2 last pos within both constrains
