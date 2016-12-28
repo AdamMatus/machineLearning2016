@@ -36,6 +36,7 @@ private:
 		mainWindow.draw(car_rs);	
 	} 
 	void waitForNextFrame();
+
 	void doBarrierGraphicsAndEndFrame(const Track& contextTrack)
 	{
 		mainWindow.clear(sf::Color::Black);
@@ -68,6 +69,7 @@ public:
 	bool letUserDrawBarriers(Track& tr);
 	void letUserDrawSingleBarrier(Track& contextTrack);
 	void letUserDrawFinishBarrier(Track & contextTrack);
+	void letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar);
 };
 
 #endif

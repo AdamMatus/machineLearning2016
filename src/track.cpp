@@ -41,7 +41,7 @@ void Track::trackMove(Car& contextCar)
 	}
 }
 
-int Track::trackMoveUntilBarrier(Car& contextCar, int limit) // returns
+int Track::trackMoveUntilBarrier(Car& contextCar, int limit) const // returns
 {
 	int index = 0;
 	while(limit-- > 0)
@@ -133,7 +133,7 @@ void Track::FinishBarrier::interactWithBarrier(Car& contextCar)
 	}
 }
 
-sf::Vector2f Track::getVectorToLastFinishBarrier(const Car& contextCar)
+sf::Vector2f Track::getVectorToLastFinishBarrier(const Car& contextCar) const
 {
 	sf::Vector2f vecToFinish(0,0);
 	

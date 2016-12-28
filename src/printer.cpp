@@ -19,6 +19,65 @@ Printer::Printer(unsigned int w, unsigned int h):
 	{
 		return;
 	}
+} 
+void Printer::letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar)
+{
+	bool drawing_in_progress = true;
+	bool buttonPressed = false;
+	Car auxCar(contextCar);
+	CarPredictedMovementInfo cpmi, normalizedCPMI;
+	
+	do
+	{
+		while(mainWindow.pollEvent(event))
+		{
+			if( event.type == sf::Event::Closed )  
+			{
+				mainWindow.close();
+				break; //TODO throw excteption
+			}
+			else if(event.type == sf::Event::MouseButtonPressed)
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
+				{
+					sf::Vector2f pos = sf::Vector2f(event.mouseButton.x,event.mouseButton.y);
+					auxCar.setStartPosition(pos);
+					auxCar.resetCar();
+					buttonPressed = true;
+				}
+			}
+			else if( event.type == sf::Event::MouseMoved )
+			{
+				if( buttonPressed == true )
+				{
+					auxCar.resetCar();
+
+					auxCar.accelerate(sf::Vector2f(0,0),
+						 								sf::Vector2f(	event.mouseMove.x - auxCar.getPosition().x,
+																					event.mouseMove.y - auxCar.getPosition().y )
+														); 
+					auxCar.getCPMovementInfo(cpmi, contextTrack);
+					auxCar.getNormalizedCPMovementInfo(normalizedCPMI, contextTrack);
+				}
+			}
+			else if( event.type == sf::Event::MouseButtonReleased )
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
+				{
+					//here
+					drawing_in_progress = false;
+				}
+			}
+		}
+		mainWindow.clear(sf::Color::Black);
+		drawCarInfo(auxCar, cpmi, normalizedCPMI);
+		drawBarriers(contextTrack);	
+		drawCar(auxCar);
+		mainWindow.display();
+		waitForNextFrame();
+		
+	}while(drawing_in_progress);
+
 }
 
 bool Printer::letUserDrawBarriers(Track& contextTrack) //TODO exceptions
@@ -339,6 +398,11 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		contextCar.getCPMovementInfo(contextCarPMI, contextTrack );
 		contextCar.getNormalizedCPMovementInfo(normalizedContextCarPMI, contextTrack);
 		//### ~car info
+		
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		{
+			letUserInsertNewLearningInfo(contextTrack, contextCar);
+		}
 		
 		//new single trainning info for ANN
 		

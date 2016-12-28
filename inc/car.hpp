@@ -50,9 +50,13 @@ public:
 
 	void accelerate(const sf::Vector2f& dir, const sf::Vector2f& acc = sf::Vector2f() );
 	void calculateNewPosition();
-	void getCPMovementInfo(CarPredictedMovementInfo& ,Track&) const; 
-	void getNormalizedCPMovementInfo(CarPredictedMovementInfo& contextCarPMI, Track& contextTrack) const;
-	
+	void getCPMovementInfo(CarPredictedMovementInfo& ,const Track&) const; 
+	void getNormalizedCPMovementInfo(CarPredictedMovementInfo& contextCarPMI,const Track& contextTrack) const;
+
+	void setStartPosition(const sf::Vector2f& sp)
+	{
+		start_position = sp;
+	}
 
 private:
 	static const int max_size_of_sight = 50; // maximium quantums of time for prediction

@@ -56,7 +56,7 @@ void Car::calculateNewPosition() // call only once in quantum time
 	position.y += (velocity.y)* quantum_time.count()/1000;	
 }
 
-void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, Track& contextTrack) const
+void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, const Track& contextTrack) const
 {
 	Car contextCar(*this);
 
@@ -84,7 +84,7 @@ void Car::getCPMovementInfo(CarPredictedMovementInfo& cpmi, Track& contextTrack)
 	cpmi.vectorToFinishBarrier = contextTrack.getVectorToLastFinishBarrier(*this);
 }
 
-void Car::getNormalizedCPMovementInfo(CarPredictedMovementInfo& normalizedContextCarPMI, Track& contextTrack) const
+void Car::getNormalizedCPMovementInfo(CarPredictedMovementInfo& normalizedContextCarPMI,const Track& contextTrack) const
 {
 	Car contextCar(*this);	
 
