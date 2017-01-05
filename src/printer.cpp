@@ -20,7 +20,7 @@ Printer::Printer(unsigned int w, unsigned int h):
 		return;
 	}
 } 
-void Printer::letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar)
+void Printer::letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar, struct fann* ann)
 {
 	bool drawing_in_progress = true;
 	bool buttonPressed = false;
@@ -64,6 +64,52 @@ void Printer::letUserInsertNewLearningInfo(const Track &contextTrack, const Car 
 			{
 				if(event.mouseButton.button == sf::Mouse::Left)
 				{
+					std::ofstream tf;
+					tf.open("train.data", std::ios::app | std::ios::out);
+
+					fann_type input[10];
+					fann_type output[2];
+
+					input[0] =  normalizedCPMI.vectorToFinishBarrier.x;
+					input[1] =  normalizedCPMI.vectorToFinishBarrier.y;
+					input[2] =  auxCar.getVelocity().x/auxCar.getAcceleration().x;
+					input[3] =  auxCar.getVelocity().y/auxCar.getAcceleration().y;
+					input[4] =  normalizedCPMI.relPosVec1.x;
+					input[5] =  normalizedCPMI.relPosVec1.y;
+					input[6] =  normalizedCPMI.relPosVec2.x;
+					input[7] =  normalizedCPMI.relPosVec2.y;
+					input[8] =  normalizedCPMI.endVelVersor.x;
+					input[9] =  normalizedCPMI.endVelVersor.y;
+
+					sf::Vector2f dir(0,0);
+					while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+					{
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+								dir.y=-1;
+						else	
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+							dir.y=1;
+
+			
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							dir.x=1;
+						else
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							dir.x=-1;
+
+						mainWindow.clear(sf::Color::Black);
+						drawBarriers(contextTrack);	
+						drawCar(contextCar);
+						mainWindow.display();
+						waitForNextFrame();
+					}
+
+			output[0] = dir.x;
+			output[1] = dir.y;
+
+			fann_train(ann, input, output);
+
+			tf.close();
 					//here
 					drawing_in_progress = false;
 				}
@@ -277,8 +323,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 	fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 	//	fann_train_on_file(ann, "train.data", 200, 10, 0.01);
 
-	fann_save(ann, "car.net");
-	//~fann creation and training
+	fann_save(ann, "car.net"); //~fann creation and training
 	//
 	//terminal init
 
@@ -381,6 +426,10 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 			{
 				contextTrack.clear_all_barriers();	
 			}
+			else if(command_str == "new info")
+			{
+				letUserInsertNewLearningInfo(contextTrack,contextCar,ann);
+			}
 		}
 		//~commands
 		
@@ -389,6 +438,7 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 
 		//TODO: let in some way displaying user controled car
 		//manualController.move(contextCar);	
+		manualController.move(contextCar);	
 		testAnnController.move(contextCar, ann, contextTrack); // CONTROLLER cause ACCELERATION
 		
 		contextCar.calculateNewPosition(); // compute new position after acceleration
@@ -399,62 +449,15 @@ void Printer::testPoll(Track& contextTrack, Car& contextCar)
 		contextCar.getNormalizedCPMovementInfo(normalizedContextCarPMI, contextTrack);
 		//### ~car info
 		
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		{
-			letUserInsertNewLearningInfo(contextTrack, contextCar);
+			letUserInsertNewLearningInfo(contextTrack, contextCar,ann);
 		}
 		
 		//new single trainning info for ANN
 		
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		{
-			std::ofstream tf;
-			tf.open("train.data", std::ios::app | std::ios::out);
-
-			fann_type input[10];
-			fann_type output[2];
-
-			input[0] =  normalizedContextCarPMI.vectorToFinishBarrier.x;
-			input[1] =  normalizedContextCarPMI.vectorToFinishBarrier.y;
-			input[2] =  contextCar.getVelocity().x/contextCar.getAcceleration().x;
-			input[3] =  contextCar.getVelocity().y/contextCar.getAcceleration().y;
-			input[4] =  normalizedContextCarPMI.relPosVec1.x;
-			input[5] =  normalizedContextCarPMI.relPosVec1.y;
-			input[6] =  normalizedContextCarPMI.relPosVec2.x;
-			input[7] =  normalizedContextCarPMI.relPosVec2.y;
-			input[8] =  normalizedContextCarPMI.endVelVersor.x;
-			input[9] =  normalizedContextCarPMI.endVelVersor.y;
-
-			sf::Vector2f dir(0,0);
-			while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-			{
-				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-						dir.y=-1;
-				else	
-				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-					dir.y=1;
-
-	
-				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-					dir.x=1;
-				else
-				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-					dir.x=-1;
-
-				mainWindow.clear(sf::Color::Black);
-				drawBarriers(contextTrack);	
-				drawCar(contextCar);
-				mainWindow.display();
-				if(terminal.isTerminalOpen()) drawTerminal(terminal);
-				waitForNextFrame();
-			}
-
-			output[0] = dir.x;
-			output[1] = dir.y;
-
-			fann_train(ann, input, output);
-
-			tf.close();
 		}//~fann 
 
 		mainWindow.clear(sf::Color::Black);

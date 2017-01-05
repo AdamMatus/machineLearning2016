@@ -69,7 +69,7 @@ public:
 	bool letUserDrawBarriers(Track& tr);
 	void letUserDrawSingleBarrier(Track& contextTrack);
 	void letUserDrawFinishBarrier(Track & contextTrack);
-	void letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar);
+	void letUserInsertNewLearningInfo(const Track &contextTrack, const Car & contextCar, struct fann* ann);
 };
 
 #endif
